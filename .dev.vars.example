@@ -1,0 +1,4 @@
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_SECRET=replace-with-a-random-64-character-hex-secret
+ADMIN_EMAIL=you@example.com
+ADMIN_BOOTSTRAP_TOKEN=replace-with-a-different-random-64-character-hex-token

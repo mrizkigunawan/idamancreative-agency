@@ -1,0 +1,17 @@
+node_modules
+.pnpm-store
+.DS_Store
+dist
+dist-ssr
+*.local
+.env
+.dev.vars
+.dev.vars.*.local
+!.dev.vars.example
+.nitro
+.tanstack
+.wrangler
+.output
+.vinxi
+__unconfig*
+todos.json

@@ -1,0 +1,8 @@
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+
+export type CashflowPoint = { day: number; Masuk: number; Keluar: number }
+const money = (value: number) => `Rp ${Number(value || 0).toLocaleString('id-ID')}`
+
+export function CashflowChart({ data }: { data: CashflowPoint[] }) {
+  return <ResponsiveContainer width="100%" height="100%"><AreaChart data={data} margin={{ top: 8, left: 4, right: 8, bottom: 0 }}><defs><linearGradient id="cashIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#70b9a6" stopOpacity={.3} /><stop offset="100%" stopColor="#70b9a6" stopOpacity={0} /></linearGradient><linearGradient id="cashOut" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#eda379" stopOpacity={.27} /><stop offset="100%" stopColor="#eda379" stopOpacity={0} /></linearGradient></defs><CartesianGrid stroke="#f0ede7" vertical={false} /><XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fill: '#90897e', fontSize: 10 }} tickFormatter={(value) => value % 5 === 0 ? value : ''} /><YAxis tickLine={false} axisLine={false} width={44} tick={{ fill: '#90897e', fontSize: 10 }} tickFormatter={(value) => value >= 1000000 ? `${(value / 1000000).toFixed(0)}jt` : value} /><Tooltip formatter={(value) => money(Number(value))} labelFormatter={(label) => `Tanggal ${label}`} contentStyle={{ borderRadius: 10, border: '1px solid #eee9e0', fontSize: 11 }} /><Area type="monotone" dataKey="Masuk" stroke="#64aa96" fill="url(#cashIn)" strokeWidth={2} /><Area type="monotone" dataKey="Keluar" stroke="#e98c61" fill="url(#cashOut)" strokeWidth={2} /></AreaChart></ResponsiveContainer>
+}

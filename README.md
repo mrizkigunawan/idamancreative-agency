@@ -1,0 +1,92 @@
+# Idaman Creative Agency Workspace
+
+A private operations workspace built with TanStack Start, Cloudflare Workers, D1, Drizzle ORM, and Better Auth.
+
+## Features
+
+- Admin-only sign in with a one-time account setup flow; public registration is blocked after the first account.
+- Persistent D1 data for clients, SOW targets, content plans and briefs, production visits, pitching prospects, and income/expense transactions.
+- Monthly dashboard, cash flow chart, content calendar, per-brand workspace, performance summary, and print-friendly monthly report.
+- Content reference analysis for public Instagram, TikTok, and YouTube links, with a one-click prefilled content plan.
+- Zod-validated forms using React Hook Form. Better Auth stores sessions and persistent rate limits in D1.
+- Optional prototype sample data import for an empty workspace.
+
+## Local development
+
+Requirements: Node.js 20 or newer and pnpm 10 or newer.
+
+Content analysis uses the Cloudflare Workers AI binding configured in `wrangler.jsonc`. A Cloudflare account with Workers AI enabled is required when running an analysis, and model calls may incur usage charges even during local development. Before each request, the app asks for confirmation to send the selected brand profile, page title/description, and any caption/transcript/context to Cloudflare Workers AI. Public pages may block metadata access; in that case, paste the caption or transcript. The feature does not retrieve video analytics or watch the full video, so it labels performance drivers as hypotheses rather than proven causes of virality.
+
+1. Install packages:
+
+   ```sh
+   pnpm install
+   ```
+
+2. Create local secrets in `.dev.vars` (this file is ignored by Git). Generate both keys with `openssl rand -hex 32` and use different values:
+
+   ```dotenv
+   BETTER_AUTH_URL=http://localhost:3000
+   BETTER_AUTH_SECRET=replace-with-a-random-64-character-hex-secret
+   ADMIN_EMAIL=you@example.com
+   ADMIN_BOOTSTRAP_TOKEN=replace-with-a-different-random-64-character-hex-token
+   ```
+
+3. Apply the D1 migrations and start the app:
+
+   ```sh
+   pnpm db:local
+   pnpm dev
+   ```
+
+4. Open `http://localhost:3000`, choose **Setup admin pertama kali**, enter the exact `ADMIN_EMAIL` and `ADMIN_BOOTSTRAP_TOKEN`, and choose a unique password with at least 8 characters. The database enforces a single account, and registration is denied after it is created.
+
+Keep `ADMIN_BOOTSTRAP_TOKEN` until the admin account is created. After setup, remove it from `.dev.vars` and the Cloudflare Worker secrets. If the first setup token is lost before an admin is created, set a new one. Do not put passwords or tokens in source control.
+
+## Cloudflare deployment
+
+1. Create the production D1 database:
+
+   ```sh
+   pnpm exec wrangler d1 create idaman-creative-ops
+   ```
+
+   Copy its ID into `wrangler.jsonc` as `database_id`.
+
+2. Apply the schema:
+
+   ```sh
+   pnpm db:remote
+   ```
+
+3. Set Worker secrets. Use separate random values for the auth secret and one-time bootstrap token:
+
+   ```sh
+   pnpm exec wrangler secret put BETTER_AUTH_SECRET
+   pnpm exec wrangler secret put ADMIN_EMAIL
+   pnpm exec wrangler secret put ADMIN_BOOTSTRAP_TOKEN
+   pnpm exec wrangler secret put BETTER_AUTH_URL
+   ```
+
+   Set `BETTER_AUTH_URL` to the exact deployed `https://…` origin. Keep the setup token until the first admin account is created, then remove it with `pnpm exec wrangler secret delete ADMIN_BOOTSTRAP_TOKEN`.
+
+4. Build and deploy:
+
+   ```sh
+   pnpm deploy
+   ```
+
+5. Open the deployment URL and complete the one-time admin setup. Use a unique password of at least 8 characters; the setup form never supplies or stores a default password. Store it in a password manager.
+
+To regenerate Workers binding types after changing `wrangler.jsonc`, run `pnpm cf-typegen`.
+
+## Data and migrations
+
+- `src/lib/schema.ts` defines the application tables with Drizzle.
+- `migrations/0001_initial.sql` creates the Better Auth tables, persistent login rate-limit table, and app tables. It also adds a database trigger that guarantees only one admin account can exist.
+- Use Wrangler's D1 migration commands above for local or remote databases. `drizzle.config.ts` is provided for Drizzle Kit schema generation and D1 HTTP access.
+- The prototype data is kept in `src/lib/demo-data.json`; the dashboard can import it only when all application tables are empty.
+
+## Stack
+
+TanStack Start + React · Cloudflare Workers + D1 · Drizzle ORM · Better Auth · React Hook Form + Zod · Radix Dialog · Recharts · date-fns · Lucide.

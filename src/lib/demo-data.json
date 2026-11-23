@@ -1,0 +1,615 @@
+{
+  "brands": [
+    {
+      "id": "b1",
+      "name": "Senja Ubud Villas",
+      "industry": "Hospitality & Resort",
+      "owner": "Bapak Made Surya",
+      "phone": "6281238901122",
+      "handle": "@senjaubudvillas",
+      "retainer": 7500000,
+      "color": "#FF7A30",
+      "address": "Jl. Raya Sanggingan, Kedewatan, Ubud",
+      "notes": "Fokus pada ketenangan, floating breakfast, dan honeymoon package. Tone hangat & poetic.",
+      "sow": {
+        "reels": 8,
+        "feed": 10,
+        "story": 15,
+        "visit": 2
+      },
+      "visitDone": 1
+    },
+    {
+      "id": "b2",
+      "name": "Kala Matcha & Roastery",
+      "industry": "F&B Specialty Cafe",
+      "owner": "Ibu Ratih Pratiwi",
+      "phone": "6281998877665",
+      "handle": "@kalamatcha.bali",
+      "retainer": 6000000,
+      "color": "#2DD4BF",
+      "address": "Jl. Pantai Berawa No. 12, Canggu",
+      "notes": "Fokus pada ceremonial grade matcha, aesthetic cafe ambiance, dan work-from-cafe spots.",
+      "sow": {
+        "reels": 8,
+        "feed": 12,
+        "story": 20,
+        "visit": 2
+      },
+      "visitDone": 1
+    },
+    {
+      "id": "b3",
+      "name": "Lumière Aesthetic Clinic",
+      "industry": "Beauty & Skincare",
+      "owner": "dr. Nadia Sp.KK",
+      "phone": "6281133445566",
+      "handle": "@lumiereclinic.bali",
+      "retainer": 8000000,
+      "color": "#8C6D9E",
+      "address": "Jl. Sunset Road No. 88, Kuta",
+      "notes": "Edukasi skincare, mitos vs fakta dermatologi, dan treatment acne/rejuvenation.",
+      "sow": {
+        "reels": 10,
+        "feed": 12,
+        "story": 20,
+        "visit": 2
+      },
+      "visitDone": 1
+    },
+    {
+      "id": "b4",
+      "name": "Terra Pottery Studio",
+      "industry": "Art & Craft Workshop",
+      "owner": "Kak Raka & Kak Dian",
+      "phone": "6281776655443",
+      "handle": "@terrapottery.bali",
+      "retainer": 4500000,
+      "color": "#C88A3B",
+      "address": "Jl. Raya Kerobokan No. 45",
+      "notes": "Workshop keramik weekend, proses pembuatan gerabah asmr, dan hasil karya handmade.",
+      "sow": {
+        "reels": 6,
+        "feed": 10,
+        "story": 10,
+        "visit": 1
+      },
+      "visitDone": 1
+    },
+    {
+      "id": "b5",
+      "name": "Svara Wellness & Pilates",
+      "industry": "Health & Fitness",
+      "owner": "Coach Amanda",
+      "phone": "6281223344556",
+      "handle": "@svarapilates",
+      "retainer": 6500000,
+      "color": "#4F7CAC",
+      "address": "Jl. Umalas I No. 9, Kerobokan",
+      "notes": "Reformer pilates, healthy lifestyle, dan gerakan stretch anti-pegal depan laptop.",
+      "sow": {
+        "reels": 8,
+        "feed": 10,
+        "story": 15,
+        "visit": 2
+      },
+      "visitDone": 1
+    },
+    {
+      "id": "b6",
+      "name": "Nirmala Linen Wear",
+      "industry": "Resort Fashion Brand",
+      "owner": "Ibu Ayu Lestari",
+      "phone": "6281338445566",
+      "handle": "@nirmalalinen",
+      "retainer": 5500000,
+      "color": "#A35D6A",
+      "address": "Jl. Kayu Aya No. 19, Seminyak",
+      "notes": "Mix & match outfit liburan Bali, bahan katun linen lokal premium.",
+      "sow": {
+        "reels": 6,
+        "feed": 12,
+        "story": 10,
+        "visit": 1
+      },
+      "visitDone": 1
+    }
+  ],
+  "contents": [
+    {
+      "id": "c_oct1",
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "YouTube"
+      ],
+      "brandId": "b1",
+      "title": "Hidden Waterfall Tour Dekat Senja Ubud",
+      "format": "Reels",
+      "date": "2026-10-10",
+      "status": "Uploaded",
+      "inspo": "https://www.tiktok.com/search?q=ubud%20waterfall%20hidden%20gem",
+      "hook": "Cuma 10 menit dari villa, ada air terjun sepi serasa milik pribadi!",
+      "brief": "Shot jalan setapak menuju air terjun + transisi masuk ke private pool Senja Ubud.",
+      "caption": "Explore Ubud beyond the crowds. Stay at Senja Ubud Villas.",
+      "views": 51200,
+      "likes": 3890,
+      "comments": 162,
+      "shares": 940,
+      "saves": 1580
+    },
+    {
+      "id": "c_oct2",
+      "platforms": [
+        "Instagram",
+        "Facebook"
+      ],
+      "brandId": "b1",
+      "title": "Panduan Lengkap 3D2N Staycation di Ubud",
+      "format": "Feed",
+      "date": "2026-10-22",
+      "status": "Uploaded",
+      "inspo": "https://www.pinterest.com/search/pins/?q=travel%20itinerary%20carousel",
+      "hook": "Itinerary anti-macet buat kamu yang butuh healing total di Ubud.",
+      "brief": "Carousel 6 slide: Day 1 Spa & Sunset, Day 2 Floating Breakfast & Yoga, Day 3 Art Market.",
+      "caption": "Save itinerary ini untuk liburanmu berikutnya ke Ubud!",
+      "views": 18400,
+      "likes": 1240,
+      "comments": 58,
+      "shares": 410,
+      "saves": 890
+    },
+    {
+      "id": "c_oct3",
+      "platforms": [
+        "Instagram",
+        "TikTok"
+      ],
+      "brandId": "b2",
+      "title": "Behind The Bar: Kenapa Matcha Kami Berwarna Hijau Cerah?",
+      "format": "Reels",
+      "date": "2026-10-15",
+      "status": "Uploaded",
+      "inspo": "https://www.tiktok.com/search?q=ceremonial%20matcha%20explained",
+      "hook": "Beda warna matcha = beda kualitas panen pertama di Uji, Jepang!",
+      "brief": "Barista menunjukkan perbandingan bubuk first-harvest vs culinary grade.",
+      "caption": "Only first-harvest Uji ceremonial matcha at Kala.",
+      "views": 44900,
+      "likes": 3210,
+      "comments": 140,
+      "shares": 680,
+      "saves": 1120
+    },
+    {
+      "id": "c1",
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "YouTube"
+      ],
+      "brandId": "b1",
+      "title": "POV Bangun Pagi Menghadap Lembah Ubud",
+      "format": "Reels",
+      "date": "2026-11-05",
+      "status": "Uploaded",
+      "inspo": "https://www.pinterest.com/search/pins/?q=ubud%20villa%20morning%20aesthetic",
+      "hook": "Suara alam Ubud jam 6 pagi yang bikin lupa deadline...",
+      "brief": "1. Wide shot tirai dibuka perlahan (3s)\n2. Close up kopi panas di balkon (2s)\n3. Drone/panning pool menghadap hutan (4s)",
+      "caption": "Waking up to misty mornings at Senja Ubud Villas. Save this for your next Bali escape.",
+      "views": 42800,
+      "likes": 3120,
+      "comments": 145,
+      "shares": 890,
+      "saves": 1240
+    },
+    {
+      "id": "c2",
+      "platforms": [
+        "Instagram",
+        "Facebook"
+      ],
+      "brandId": "b1",
+      "title": "3 Alasan Honeymoon di Ubud Lebih Berkesan",
+      "format": "Feed",
+      "date": "2026-11-12",
+      "status": "Uploaded",
+      "inspo": "https://www.instagram.com/explore/tags/luxuryvilla/",
+      "hook": "Slide 1: Private pool & candle light dinner di tengah hutan",
+      "brief": "Carousel 5 slide dengan typography serif minimalis + foto romantic dinner.",
+      "caption": "Intimate moments crafted just for two. Cek link di bio untuk paket Honeymoon November.",
+      "views": 14500,
+      "likes": 980,
+      "comments": 42,
+      "shares": 210,
+      "saves": 430
+    },
+    {
+      "id": "c3",
+      "platforms": [
+        "Instagram",
+        "TikTok"
+      ],
+      "brandId": "b1",
+      "title": "Behind The Scene: Floating Breakfast Preparation",
+      "format": "Reels",
+      "date": "2026-11-21",
+      "status": "Approval",
+      "inspo": "https://www.tiktok.com/search?q=floating%20breakfast%20bali",
+      "hook": "Pernah penasaran gimana cara nampan ini tetap mengapung seimbang?",
+      "brief": "Chef menata croissant, buah tropis, dan jus segar lalu diletakkan di kolam.",
+      "caption": "Start your morning floating in paradise.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "saves": 0
+    },
+    {
+      "id": "c10",
+      "platforms": [
+        "Instagram",
+        "Facebook"
+      ],
+      "brandId": "b1",
+      "title": "Weekend Yoga & Sound Healing Session",
+      "format": "Story",
+      "date": "2026-11-24",
+      "status": "Brief Ready",
+      "inspo": "https://www.instagram.com/explore/tags/soundhealing/",
+      "hook": "3 frame IG Story dengan interactive poll jadwal kelas.",
+      "brief": "Frame 1: Video suasana shala pagi. Frame 2: Poll jam favorit. Frame 3: Link reservasi.",
+      "caption": "Join our complimentary morning yoga for in-house guests.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "saves": 0
+    },
+    {
+      "id": "c4",
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "YouTube"
+      ],
+      "brandId": "b2",
+      "title": "ASMR Ceremonial Uji Matcha Whisking",
+      "format": "Reels",
+      "date": "2026-11-08",
+      "status": "Uploaded",
+      "inspo": "https://www.tiktok.com/search?q=matcha%20asmr%20aesthetic",
+      "hook": "No talking, just pure ceremonial grade matcha ASMR.",
+      "brief": "Mic dekatkan ke mangkuk chawan saat mengocok matcha dengan chasen bambu, tuang ke es susu oat.",
+      "caption": "Your daily dose of calm in Canggu. Open 7 AM - 6 PM.",
+      "views": 68400,
+      "likes": 5410,
+      "comments": 230,
+      "shares": 1420,
+      "saves": 2150
+    },
+    {
+      "id": "c5",
+      "platforms": [
+        "Instagram",
+        "Facebook",
+        "Lainnya"
+      ],
+      "brandId": "b2",
+      "title": "Top 4 Work-From-Cafe Spots & Menu Favorit",
+      "format": "Feed",
+      "date": "2026-11-18",
+      "status": "Brief Ready",
+      "inspo": "https://www.pinterest.com/search/pins/?q=cafe%20menu%20carousel%20design",
+      "hook": "Colokan banyak + WiFi kencang 150 Mbps di Canggu!",
+      "brief": "Foto sudut meja kerja laptop, kecepatan WiFi, dan Iced Dirty Matcha.",
+      "caption": "Productive mornings start at Kala Matcha.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "saves": 0
+    },
+    {
+      "id": "c6",
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "YouTube"
+      ],
+      "brandId": "b3",
+      "title": "Mitos vs Fakta Pico Laser untuk Bekas Jerawat",
+      "format": "Reels",
+      "date": "2026-11-10",
+      "status": "Uploaded",
+      "inspo": "https://www.instagram.com/explore/tags/skincareclinic/",
+      "hook": "Stop beli krim abal-abal kalau bekas jerawatmu tipe PIH!",
+      "brief": "dr. Nadia menjelaskan perbedaan PIH dan PIE dengan visual animasi ringan.",
+      "caption": "Konsultasikan kondisi kulitmu langsung bersama dokter estetika kami.",
+      "views": 29300,
+      "likes": 1850,
+      "comments": 198,
+      "shares": 540,
+      "saves": 980
+    },
+    {
+      "id": "c7",
+      "platforms": [
+        "Instagram",
+        "TikTok"
+      ],
+      "brandId": "b4",
+      "title": "Timelapse Membuat Mug Keramik dari Tanah Liat",
+      "format": "Reels",
+      "date": "2026-11-14",
+      "status": "Uploaded",
+      "inspo": "https://www.pinterest.com/search/pins/?q=pottery%20wheel%20aesthetic",
+      "hook": "Dari segumpal tanah liat jadi mug kopi favoritmu.",
+      "brief": "Shot tangan di pottery wheel, proses glazing warna terracotta, dan hasil akhir.",
+      "caption": "Slot Weekend Pottery Class minggu ini tersisa 4 kursi!",
+      "views": 19200,
+      "likes": 1420,
+      "comments": 84,
+      "shares": 310,
+      "saves": 620
+    },
+    {
+      "id": "c8",
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "YouTube"
+      ],
+      "brandId": "b5",
+      "title": "3 Gerakan Reformer Pilates untuk Postur Tegak",
+      "format": "Reels",
+      "date": "2026-11-11",
+      "status": "Uploaded",
+      "inspo": "https://www.tiktok.com/search?q=reformer%20pilates%20routine",
+      "hook": "Sering pegal punggung karena kerja depan laptop? Coba 3 gerakan ini!",
+      "brief": "Coach Amanda mendemonstrasikan 3 gerakan di mesin reformer dengan teks overlay.",
+      "caption": "Book your First Timer Trial Class via link in bio.",
+      "views": 35600,
+      "likes": 2690,
+      "comments": 112,
+      "shares": 780,
+      "saves": 1590
+    },
+    {
+      "id": "c9",
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "Facebook"
+      ],
+      "brandId": "b6",
+      "title": "1 Kemeja Linen untuk 3 Gaya Liburan di Bali",
+      "format": "Reels",
+      "date": "2026-11-19",
+      "status": "Editing",
+      "inspo": "https://www.tiktok.com/search?q=linen%20shirt%20styling%203%20ways",
+      "hook": "Packing ringan ke Bali cuma bawa 1 kemeja linen? Bisa banget!",
+      "brief": "Look 1: Beach cover-up. Look 2: Brunch casual. Look 3: Sunset dinner.",
+      "caption": "Effortless island dressing with Nirmala Linen.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "saves": 0
+    },
+    {
+      "id": "c_dec1",
+      "platforms": [
+        "Instagram",
+        "TikTok",
+        "Facebook"
+      ],
+      "brandId": "b1",
+      "title": "Festive Season & New Year Eve Dinner di Ubud",
+      "format": "Reels",
+      "date": "2026-12-06",
+      "status": "Ideation",
+      "inspo": "https://www.pinterest.com/search/pins/?q=tropical%20christmas%20dinner%20bali",
+      "hook": "Rayakan malam tahun baru dengan 7-course degustation dinner di tengah hutan Ubud.",
+      "brief": "Teaser dekorasi lilin, live acoustic, dan countdown kembang api ramah lingkungan.",
+      "caption": "Early bird reservation for Festive Dinner is now open.",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "saves": 0
+    },
+    {
+      "id": "c_dec2",
+      "platforms": [
+        "Instagram",
+        "TikTok"
+      ],
+      "brandId": "b2",
+      "title": "Holiday Menu Launch: Peppermint Uji Matcha Latte",
+      "format": "Reels",
+      "date": "2026-12-10",
+      "status": "Ideation",
+      "inspo": "https://www.tiktok.com/search?q=holiday%20matcha%20recipe",
+      "hook": "Menu spesial Desember yang cuma ada 30 hari di Kala Matcha!",
+      "brief": "Pouring cold foam peppermint di atas iced matcha dengan taburan crushed candy cane.",
+      "caption": "Tis the season for Peppermint Matcha!",
+      "views": 0,
+      "likes": 0,
+      "comments": 0,
+      "shares": 0,
+      "saves": 0
+    }
+  ],
+  "visits": [
+    {
+      "id": "v1",
+      "brandId": "b1",
+      "date": "2026-11-04",
+      "time": "08:00",
+      "location": "Senja Ubud Villas, Kedewatan",
+      "notes": "Shooting floating breakfast & honeymoon dinner setup."
+    },
+    {
+      "id": "v2",
+      "brandId": "b2",
+      "date": "2026-11-14",
+      "time": "10:00",
+      "location": "Kala Matcha, Batu Bolong Canggu",
+      "notes": "Take video menu seasonal & suasana WFC."
+    },
+    {
+      "id": "v3",
+      "brandId": "b3",
+      "date": "2026-11-19",
+      "time": "13:30",
+      "location": "Lumière Clinic, Denpasar",
+      "notes": "Taping konten edukasi dr. Nadia (4 Reels sekaligus)."
+    },
+    {
+      "id": "v4",
+      "brandId": "b4",
+      "date": "2026-11-22",
+      "time": "15:00",
+      "location": "Terra Pottery Studio, Kerobokan",
+      "notes": "Dokumentasi kelas weekend pottery & foto katalog."
+    },
+    {
+      "id": "v5",
+      "brandId": "b1",
+      "date": "2026-11-26",
+      "time": "09:30",
+      "location": "Senja Ubud Villas, Kedewatan",
+      "notes": "Visit ke-2: Take konten promo akhir tahun."
+    }
+  ],
+  "pitching": [
+    {
+      "id": "p1",
+      "brandName": "Surya Beach Club Canggu",
+      "picName": "Bapak Kevin Wijaya",
+      "contact": "6281299887766",
+      "estimatedValue": 12000000,
+      "status": "Negosiasi",
+      "sow": "12 Reels, 15 Feed, 30 Story, 4x Visit/bulan + KOL Coordination"
+    },
+    {
+      "id": "p2",
+      "brandName": "Akar Organic Gelato",
+      "picName": "Ibu Melati",
+      "contact": "6281800998877",
+      "estimatedValue": 5500000,
+      "status": "Pitching / Meeting",
+      "sow": "8 Reels, 10 Feed, 15 Story, 2x Visit/bulan (Fokus TikTok & IG)"
+    },
+    {
+      "id": "p3",
+      "brandName": "Bhumi Boutique Hotel",
+      "picName": "Ms. Jessica Tan",
+      "contact": "6281122334455",
+      "estimatedValue": 9500000,
+      "status": "Sent Proposal",
+      "sow": "10 Reels, 12 Feed, 20 Story, 2x Visit/bulan + Monthly Report"
+    }
+  ],
+  "finances": [
+    {
+      "id": "f1",
+      "type": "income",
+      "title": "Retainer Nov - Senja Ubud Villas",
+      "category": "Retainer Klien",
+      "amount": 7500000,
+      "date": "2026-11-02",
+      "status": "Lunas"
+    },
+    {
+      "id": "f2",
+      "type": "income",
+      "title": "Retainer Nov - Kala Matcha & Roastery",
+      "category": "Retainer Klien",
+      "amount": 6000000,
+      "date": "2026-11-05",
+      "status": "Lunas"
+    },
+    {
+      "id": "f3",
+      "type": "income",
+      "title": "Retainer Nov - Lumière Aesthetic Clinic",
+      "category": "Retainer Klien",
+      "amount": 8000000,
+      "date": "2026-11-07",
+      "status": "Lunas"
+    },
+    {
+      "id": "f4",
+      "type": "income",
+      "title": "Retainer Nov - Svara Wellness & Pilates",
+      "category": "Retainer Klien",
+      "amount": 6500000,
+      "date": "2026-11-10",
+      "status": "Lunas"
+    },
+    {
+      "id": "f5",
+      "type": "income",
+      "title": "Retainer Nov - Terra Pottery Studio",
+      "category": "Retainer Klien",
+      "amount": 4500000,
+      "date": "2026-11-20",
+      "status": "Belum Dibayar"
+    },
+    {
+      "id": "f6",
+      "type": "income",
+      "title": "Retainer Nov - Nirmala Linen Wear",
+      "category": "Retainer Klien",
+      "amount": 5500000,
+      "date": "2026-11-25",
+      "status": "Belum Dibayar"
+    },
+    {
+      "id": "f7",
+      "type": "expense",
+      "title": "Gaji Freelance Video Editor & Videographer",
+      "category": "Gaji Tim / Freelancer",
+      "amount": 6500000,
+      "date": "2026-11-15",
+      "status": "Lunas"
+    },
+    {
+      "id": "f8",
+      "type": "expense",
+      "title": "Langganan CapCut Pro, Canva Pro & Notion",
+      "category": "Langganan Software",
+      "amount": 650000,
+      "date": "2026-11-03",
+      "status": "Lunas"
+    },
+    {
+      "id": "f9",
+      "type": "expense",
+      "title": "Transportasi & Bensin Visit Ubud - Canggu",
+      "category": "Operasional Visit",
+      "amount": 850000,
+      "date": "2026-11-14",
+      "status": "Lunas"
+    },
+    {
+      "id": "f10",
+      "type": "income",
+      "title": "Retainer Okt - Semua Klien (Rekap Oktober)",
+      "category": "Retainer Klien",
+      "amount": 38000000,
+      "date": "2026-10-15",
+      "status": "Lunas"
+    },
+    {
+      "id": "f11",
+      "type": "expense",
+      "title": "Operasional & Gaji Tim Oktober",
+      "category": "Gaji Tim / Freelancer",
+      "amount": 7800000,
+      "date": "2026-10-25",
+      "status": "Lunas"
+    }
+  ]
+}
