@@ -1,6 +1,6 @@
 # Project change backlog
 
-Status: tasks 1–3 are implemented. Tasks 4–5 remain pending; visual/theme work stays deferred.
+Status: tasks 1–3 and 5 are implemented. Task 4 (visual/theme work) stays deferred.
 
 ## 1. Remove Asisten Konten
 
@@ -44,13 +44,19 @@ Wait until the rest of the system has been reviewed before designing or implemen
 
 The brand name set through profile editing should be the source of truth for brand names displayed by the system. This is a broader audit and refactor.
 
-- [ ] Audit hard-coded references to **Idaman Creative**, including spelling/case variations.
-- [ ] Trace how the profile brand name is stored, updated, and accessed.
-- [ ] Use the configured name consistently wherever the system displays the brand, including applicable page titles, messages, templates, and generated outputs.
-- [ ] Remove hard-coded original-brand references from application code and identify any remaining references that need separate handling.
-- [ ] Decide how screens without an available profile or configured name should behave.
-- [ ] Verify changing the brand name updates all relevant surfaces and persists after reload.
-- [ ] Check that one user's configured brand does not incorrectly affect another user's experience.
+- [x] Audit hard-coded references to **Idaman Creative**, including spelling/case variations.
+- [x] Trace how the profile brand name is stored, updated, and accessed.
+- [x] Use the configured name consistently wherever the system displays the brand, including applicable page titles, messages, templates, and generated outputs.
+- [x] Remove hard-coded original-brand references from application code and identify any remaining references that need separate handling.
+- [x] Decide how screens without an available profile or configured name should behave.
+- [x] Verify updated branding through regression tests, PDF exports, browser previews, and the saved identity on login/reload. Authenticated profile saving still needs an end-to-end smoke test.
+- [x] Check workspace identity scope: one admin/workspace per D1 database, no shared profile cache, public name/tagline only before login, and client names kept separate. Multi-tenant user branding is outside this existing architecture.
+
+Implementation: shared profile normalization and React context; server-loaded login identity and page titles; current names in reports, review links, templates, and PDFs; neutral default name/logo; configurable document signer; explicit payment destinations instead of the original owner's defaults. Templates store `{{workspaceName}}`. Per the user's decision, exact legacy generated introductions are upgraded while custom text is preserved. Existing document numbers and saved financial records are unchanged. Previously stored share links are carried over to a neutral session-storage key.
+
+Validation: Node branding/PDF regression tests, SQLite migration tests, TypeScript, production build, PDF text extraction and visual rendering, desktop/mobile context updates, special characters, long names, and live login/reload checks. Migrations 0030 and 0031 are applied locally after a backup under ignored `tmp/branding-backups/`; all existing non-document data was compared and preserved. Remote migrations have not been applied.
+
+Remaining original-name references are infrastructure identifiers, immutable historical migrations, the exact-match legacy data migration, and test fixtures. Saved user-uploaded logos, custom prose, and existing payment details remain user data.
 
 ## Future additions
 

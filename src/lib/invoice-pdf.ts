@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { embedWorkspaceLogo } from './workspace-branding'
+import { embedWorkspaceLogo, fitPdfText } from './workspace-branding'
 import { loadWorkspaceProfile } from './workspace-profile'
 
 type InvoiceBrand = { name: string; phone: string; address: string }
@@ -86,15 +86,15 @@ export async function createInvoicePdf(brand: InvoiceBrand, transaction: Invoice
     targetPage.drawRectangle({ x, y: bottom, width: 286, height: 110, color: rgb(0.97, 0.96, 0.94), borderColor: rgb(0.9, 0.87, 0.83), borderWidth: 0.7 })
     targetPage.drawRectangle({ x, y: bottom, width: 3, height: 110, color: rgb(0.94, 0.47, 0.24) })
     targetPage.drawText('Payment details', { x: x + 16, y: bottom + 88, size: 9.5, font: regular, color: brown })
-    targetPage.drawText(`Account Name: ${safePdfText(transaction.paymentAccountName || 'Kadek Winda Mei Andani').slice(0, 34)}`, { x: x + 16, y: bottom + 67, size: 8.2, font: regular, color: brown, maxWidth: 250 })
+    targetPage.drawText(`Account Name: ${safePdfText(transaction.paymentAccountName || 'Not provided').slice(0, 34)}`, { x: x + 16, y: bottom + 67, size: 8.2, font: regular, color: brown, maxWidth: 250 })
     targetPage.drawLine({ start: { x: x + 16, y: bottom + 56 }, end: { x: x + 270, y: bottom + 56 }, thickness: 0.5, color: line })
-    targetPage.drawText(safePdfText(transaction.paymentBankName || 'Bank Central Asia (BCA)').slice(0, 26), { x: x + 16, y: bottom + 37, size: 8, font: regular, color: muted, maxWidth: 155 })
-    targetPage.drawText(safePdfText(transaction.paymentAccountNumber || '6115652935').slice(0, 24), { x: x + 16, y: bottom + 19, size: 8, font: bold, color: brown })
+    targetPage.drawText(safePdfText(transaction.paymentBankName || 'Not provided').slice(0, 26), { x: x + 16, y: bottom + 37, size: 8, font: regular, color: muted, maxWidth: 155 })
+    targetPage.drawText(safePdfText(transaction.paymentAccountNumber || 'Not provided').slice(0, 24), { x: x + 16, y: bottom + 19, size: 8, font: bold, color: brown })
   }
   const drawReceivedBy = (targetPage: typeof page, top: number) => {
     targetPage.drawText('Received by:', { x: 350, y: top, size: 13, font: regular, color: brown })
     targetPage.drawLine({ start: { x: 368, y: top - 55 }, end: { x: 528, y: top - 55 }, thickness: 0.8, color: line })
-    targetPage.drawText(safePdfText(transaction.paymentAccountName || 'Kadek Winda Mei Andani').slice(0, 42), { x: 360, y: top - 74, size: 9, font: regular, color: brown, maxWidth: 168 })
+    targetPage.drawText(safePdfText(transaction.paymentAccountName || 'Not provided').slice(0, 42), { x: 360, y: top - 74, size: 9, font: regular, color: brown, maxWidth: 168 })
   }
 
   if (invoiceItems.length <= 4) {
@@ -107,7 +107,7 @@ export async function createInvoicePdf(brand: InvoiceBrand, transaction: Invoice
       page.drawText('Notes', { x, y: paymentBottom - 34, size: 8.5, font: regular, color: muted })
       page.drawText(safePdfText(transaction.notes).slice(0, 140), { x, y: paymentBottom - 49, size: 8.5, font: italic, color: muted, maxWidth: width })
     }
-    page.drawText(`Thank you for your trust in ${safePdfText(workspace.name)}.`, { x, y: Math.max(55, paymentBottom - (transaction.notes.trim() ? 82 : 56)), size: 9, font: italic, color: muted })
+    page.drawText(fitPdfText(`Thank you for your trust in ${safePdfText(workspace.name)}.`, italic, 9, page.getWidth() - 2 * x), { x, y: Math.max(55, paymentBottom - (transaction.notes.trim() ? 82 : 56)), size: 9, font: italic, color: muted })
   } else {
     page = pdf.addPage([595.28, 841.89])
     page.drawText('Invoice summary', { x, y: 765, size: 24, font: bold, color: brown })
@@ -121,12 +121,12 @@ export async function createInvoicePdf(brand: InvoiceBrand, transaction: Invoice
       page.drawText('Notes', { x, y: paymentBottom - 34, size: 8.5, font: regular, color: muted })
       page.drawText(safePdfText(transaction.notes).slice(0, 140), { x, y: paymentBottom - 49, size: 8.5, font: italic, color: muted, maxWidth: width })
     }
-    page.drawText(`Thank you for your trust in ${safePdfText(workspace.name)}.`, { x, y: transaction.notes.trim() ? paymentBottom - 82 : paymentBottom - 56, size: 9, font: italic, color: muted })
+    page.drawText(fitPdfText(`Thank you for your trust in ${safePdfText(workspace.name)}.`, italic, 9, page.getWidth() - 2 * x), { x, y: transaction.notes.trim() ? paymentBottom - 82 : paymentBottom - 56, size: 9, font: italic, color: muted })
   }
 
   pdf.getPages().forEach((targetPage) => {
     targetPage.drawLine({ start: { x, y: 39 }, end: { x: x + width, y: 39 }, thickness: 0.5, color: line })
-    targetPage.drawText(safePdfText(workspace.name), { x, y: 25, size: 7, font: regular, color: muted })
+    targetPage.drawText(fitPdfText(safePdfText(workspace.name), regular, 7, page.getWidth() - 2 * x - 70), { x, y: 25, size: 7, font: regular, color: muted })
   })
 
   return pdf.save()

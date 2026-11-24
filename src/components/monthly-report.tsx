@@ -1,7 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { Activity, ArrowDown, ArrowUp, Check, Eye, EyeOff, FileDown, GripVertical, Image as ImageIcon, Save, Sparkles, Trash2, TrendingUp, Upload, Users, Wallet } from 'lucide-react'
 import { saveSocialReport } from '#/lib/server'
-import { loadWorkspaceProfile } from '#/lib/workspace-profile'
+import { useWorkspaceProfile, WorkspaceLogo } from '#/components/workspace-identity'
 import type { SocialReportPlatformMetrics } from '#/lib/schema'
 
 const ReportCharts = lazy(() => import('#/components/report-charts').then((module) => ({ default: module.ReportCharts })))
@@ -29,8 +29,7 @@ function reportMonthLabel(month: string) { return new Date(`${month}-01T12:00:00
 
 export function MonthlyReport({ brandId, brandName, month, reports, contentRows, handledPlatforms, onSaved, onDeleteReport }: { brandId: string; brandName: string; month: string; reports: ReportRow[]; contentRows: { id: string; title: string; format: string; date: string; status: string; platforms: string[]; views: number; likes: number; comments: number; shares: number; saves: number }[]; handledPlatforms: string[]; onSaved: () => Promise<void>; onDeleteReport: (id: string) => Promise<void> }) {
   const existing = reports.find((report) => report.brandId === brandId && report.month === month)
-  const [workspaceName, setWorkspaceName] = useState('Idaman Creative')
-  useEffect(() => { void loadWorkspaceProfile().then((profile) => setWorkspaceName(profile.name)) }, [])
+  const { name: workspaceName } = useWorkspaceProfile()
   const [selected, setSelected] = useState<string[]>(handledPlatforms)
   const [metrics, setMetrics] = useState<Record<string, SocialReportPlatformMetrics>>({})
   const [summary, setSummary] = useState('')
@@ -122,7 +121,7 @@ export function MonthlyReport({ brandId, brandName, month, reports, contentRows,
   }
   const previewPdf = () => { setPreviewed(true); window.print() }
   return <div id="printable-report" className="monthly-report">
-    <div className="report-print-header" aria-hidden="true"><img src="/api/workspace-logo" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/brand/idaman-creative-logo.png' }} alt="" /><strong>{workspaceName.toLocaleUpperCase('id-ID')} REPORT</strong></div>
+    <div className="report-print-header" aria-hidden="true"><WorkspaceLogo decorative /><strong>{workspaceName.toLocaleUpperCase('id-ID')} REPORT</strong></div>
     <div className="report-print-footer" aria-hidden="true">{workspaceName} · Agency workspace</div>
     <section className="card report-cover"><div><div className="eyebrow">{workspaceName} · Monthly Social Media Report</div><h2>{brandName}</h2><p>Periode {month}</p></div><span className={`badge ${status === 'Final' ? 'green' : 'orange'}`}>{status === 'Final' ? 'Final' : 'Draft'}</span></section>
     <section className="card report-builder no-print">

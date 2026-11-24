@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Camera, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Copy, Image as ImageIcon, Link2, Move, Pencil, Plus, Save, Sparkles, Trash2, X } from 'lucide-react'
 import type { brandSocialProfiles, brands, contents } from '#/lib/schema'
+import { contentShareStorageKey, loadStoredContentShare } from '#/lib/content-plan-share-storage'
 
 type Brand = typeof brands.$inferSelect
 type Content = typeof contents.$inferSelect
@@ -189,14 +190,12 @@ export function ContentPlanShareButton({ brandId, brandName, month, hasContent =
   const [commentsOpen, setCommentsOpen] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [message, setMessage] = useState('')
-  const storageKey = `idaman-content-plan-share:${brandId}:${month}`
+  const storageKey = contentShareStorageKey(brandId, month)
   const currentShare = share?.brandId === brandId && share.month === month ? share : null
   useEffect(() => {
     setComments([]); setCommentsOpen(false); setDialogOpen(false); setMessage('')
     try {
-      const stored = sessionStorage.getItem(storageKey)
-      const parsed = stored ? JSON.parse(stored) as typeof share : null
-      setShare(parsed?.brandId === brandId && parsed.month === month ? parsed : null)
+      setShare(loadStoredContentShare(sessionStorage, brandId, month))
     } catch { setShare(null) }
   }, [storageKey, brandId, month])
   const create = async () => {

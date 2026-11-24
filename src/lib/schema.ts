@@ -56,7 +56,7 @@ export const workspaceBranding = sqliteTable('workspace_branding', {
   fileData: blob('file_data', { mode: 'buffer' }).notNull(), sizeBytes: integer('size_bytes').notNull(), updatedAt: integer('updated_at').notNull(),
 })
 export const workspaceProfile = sqliteTable('workspace_profile', {
-  id: text('id').primaryKey(), name: text('name').notNull().default('Idaman Creative'), tagline: text('tagline').notNull().default('Agency operating system'),
+  id: text('id').primaryKey(), name: text('name').notNull().default('Agency Workspace'), tagline: text('tagline').notNull().default('Agency operating system'),
   ownerName: text('owner_name').notNull().default(''), email: text('email').notNull().default(''), phone: text('phone').notNull().default(''),
   address: text('address').notNull().default(''), website: text('website').notNull().default(''), updatedAt: integer('updated_at').notNull(),
 })
@@ -99,7 +99,7 @@ export const transactions = sqliteTable('transactions', {
   manualClientName: text('manual_client_name').notNull().default(''), manualClientPhone: text('manual_client_phone').notNull().default(''), manualClientAddress: text('manual_client_address').notNull().default(''),
   type: text('type').notNull(), title: text('title').notNull(), category: text('category').notNull(),
   amount: integer('amount').notNull(), items: text('items', { mode: 'json' }).$type<InvoiceLineItem[]>().notNull().default([]),
-  paymentAccountName: text('payment_account_name').notNull().default('Kadek Winda Mei Andani'), paymentBankName: text('payment_bank_name').notNull().default('Bank Central Asia (BCA)'), paymentAccountNumber: text('payment_account_number').notNull().default('6115652935'),
+  paymentAccountName: text('payment_account_name').notNull().default(''), paymentBankName: text('payment_bank_name').notNull().default(''), paymentAccountNumber: text('payment_account_number').notNull().default(''),
   date: text('date').notNull(), status: text('status').notNull().default('Lunas'), notes: text('notes').notNull().default(''),
 })
 

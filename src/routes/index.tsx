@@ -21,12 +21,14 @@ import { ClientDocumentsPanel } from '#/components/client-documents'
 import { analyzeInstagramCover, getAuthState, getPageData, moveProspectDocuments, removeRecord, saveBrandSocialProfile, saveInstagramFeedOrder, saveRecord, seedDemoData, setBrandActiveStatus } from '#/lib/server'
 import { ContentPlanShareButton, InstagramFeedPlanner, InstagramProfilePlanner } from '#/components/content-planner'
 import type { brandNotes, brandSocialProfiles, brands, contents, visits, prospects, transactions, socialReports, inventoryItems } from '#/lib/schema'
-import { defaultWorkspaceProfile } from '#/lib/workspace-profile'
+import { normalizeWorkspaceProfile, workspaceTitle } from '#/lib/workspace-profile'
+import { WorkspaceBrand, WorkspaceLogo, WorkspaceProfileContext, useWorkspaceProfile } from '#/components/workspace-identity'
 import type { WorkspaceProfileDetails } from '#/lib/workspace-profile'
 
 export const Route = createFileRoute('/')({
   validateSearch: (search: Record<string, unknown>): { page?: 'profile' } => search.page === 'profile' ? { page: 'profile' } : {},
   loader: () => getAuthState(),
+  head: ({ loaderData }) => ({ meta: [{ title: workspaceTitle(normalizeWorkspaceProfile(loaderData?.workspace).name) }] }),
   component: Workspace,
 })
 
@@ -69,7 +71,7 @@ function Workspace() {
   const [user, setUser] = useState(authState.user)
   const [setupVisible, setSetupVisible] = useState(authState.setupEnabled)
   const [data, setData] = useState<Data>({ brands: [], contents: [], visits: [], brandNotes: [], prospects: [], transactions: [], reports: [], inventory: [], socialProfiles: [] })
-  const [workspaceProfile, setWorkspaceProfile] = useState<WorkspaceProfileDetails>(defaultWorkspaceProfile)
+  const [workspaceProfile, setWorkspaceProfile] = useState<WorkspaceProfileDetails>(() => normalizeWorkspaceProfile(authState.workspace))
   const [loading, setLoading] = useState(Boolean(authState.user))
   const { page } = Route.useSearch()
   const [workspaceView, setWorkspaceView] = useState('dashboard')
@@ -92,12 +94,8 @@ function Workspace() {
   const [toast, setToast] = useState('')
   const language: AppLanguage = 'id' as AppLanguage
 
-  useEffect(() => { setUser(authState.user); setSetupVisible(authState.setupEnabled) }, [authState])
-  useEffect(() => {
-    if (!user) return
-    fetch('/api/workspace-profile', { cache: 'no-store' }).then(async (response) => { if (!response.ok) return; setWorkspaceProfile({ ...defaultWorkspaceProfile, ...await response.json() as WorkspaceProfileDetails }) }).catch(() => undefined)
-  }, [user])
-  useEffect(() => { if (typeof document !== 'undefined') document.title = `${workspaceProfile.name} — Agency Workspace` }, [workspaceProfile.name])
+  useEffect(() => { setUser(authState.user); setSetupVisible(authState.setupEnabled); setWorkspaceProfile(normalizeWorkspaceProfile(authState.workspace)) }, [authState])
+  useEffect(() => { if (typeof document !== 'undefined') document.title = workspaceTitle(workspaceProfile.name) }, [workspaceProfile.name])
   useEffect(() => {
     if (!user) { setLoading(false); return }
     setLoading(true)
@@ -168,7 +166,7 @@ function Workspace() {
   }
 
   if (loading) return <div className="loading">Memuat workspace…</div>
-  if (!user) return <AuthView setupVisible={setupVisible} onComplete={async () => { await router.invalidate(); const state = await getAuthState(); setUser(state.user); setSetupVisible(state.setupEnabled) }} />
+  if (!user) return <WorkspaceProfileContext.Provider value={workspaceProfile}><AuthView setupVisible={setupVisible} onComplete={async () => { await router.invalidate(); const state = await getAuthState(); setUser(state.user); setSetupVisible(state.setupEnabled); setWorkspaceProfile(normalizeWorkspaceProfile(state.workspace)) }} /></WorkspaceProfileContext.Provider>
 
   const addRecord = (kind: Kind, defaults?: Record<string, unknown>, performanceOnly = false) => {
 
@@ -224,15 +222,15 @@ function Workspace() {
       setToast('')
     }} />
 
-  return <>
+  return <WorkspaceProfileContext.Provider value={workspaceProfile}><>
     <header className="mobile-header">
-      <div className="brandmark"><img className="brand-logo" src="/api/workspace-logo" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/brand/idaman-creative-logo.png' }} alt={workspaceProfile.name} /><div className="brand-sub">{workspaceProfile.tagline || 'Social Media Workspace'}</div></div>
+      <WorkspaceBrand />
       <div className="mobile-account-actions">{profileDropdown}<button className="icon-button" aria-label="Buka menu" onClick={() => setMobileOpen(!mobileOpen)}><Menu size={20} /></button></div>
     </header>
     {mobileOpen && <div className="mobile-shade" onClick={() => setMobileOpen(false)} />}
     <div className="shell">
       <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
-        <div className="brandmark"><img className="brand-logo" src="/api/workspace-logo" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/brand/idaman-creative-logo.png' }} alt={workspaceProfile.name} /><div className="brand-sub">{workspaceProfile.tagline}</div></div>
+        <WorkspaceBrand />
         <nav className="nav" aria-label={language === 'en' ? 'Main navigation' : 'Navigasi utama'}>{navItems.map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'active' : ''} onClick={() => { setView(id); setSelectedBrand(null); setMobileOpen(false) }}><Icon size={17} /><span>{language === 'en' ? navEnglish[label] : label}</span></button>)}</nav>
         <div className="sidebar-bottom"><div className="period-card"><strong>{language === 'en' ? 'Private workspace' : 'Workspace privat'}</strong><p>{language === 'en' ? 'Data is securely stored in the database. Admin access only.' : 'Data tersimpan aman di database. Akses hanya untuk admin.'}</p></div></div>
       </aside>
@@ -245,11 +243,11 @@ function Workspace() {
             if (result.error) throw new Error(result.error.message || 'Profil gagal disimpan.')
           }}
           onWorkspaceProfileSaved={setWorkspaceProfile}
-          onSaved={(name, image) => { setUser((current) => current ? { ...current, name, image } : current); notify('Profil berhasil diperbarui') }}
+          onSaved={(name, image) => { setUser((current) => current ? { ...current, name, image } : current); notify('Profil berhasil diperbarui'); void router.invalidate() }}
           onBack={() => setView(workspaceView)} onChangePassword={() => setPasswordOpen(true)} />}
 
         {view === 'dashboard' && <>
-          <div className="pagehead dashboard-pagehead"><div><div className="eyebrow">{workspaceProfile.name} Workspace</div><h1>{language === 'en' ? 'Hello, Winda 👋' : 'Halo, Winda 👋'}</h1><p>{language === 'en' ? `Track content, visits, and cash flow for ${activeBrands.length} active brands.` : `Pantau konten, jadwal visit, dan arus kas untuk ${activeBrands.length} brand aktif.`}</p></div><div className="page-actions"><div className="month-switch"><button aria-label={language === 'en' ? 'Previous month' : 'Bulan sebelumnya'} onClick={() => moveMonth(-1)}><ChevronLeft size={17} /></button><span className="badge" style={{ minWidth: 110, justifyContent: 'center' }}>{currentMonthLabel}</span><button aria-label={language === 'en' ? 'Next month' : 'Bulan berikutnya'} onClick={() => moveMonth(1)}><ChevronRight size={17} /></button></div><button className="button" onClick={() => addRecord('content')}><Plus size={15} /> {language === 'en' ? 'New content' : 'Konten Baru'}</button><button className="button primary" onClick={() => addRecord('brand')}><Plus size={15} /> {language === 'en' ? 'New brand' : 'Brand Baru'}</button></div></div>
+          <div className="pagehead dashboard-pagehead"><div><div className="eyebrow">{workspaceProfile.name} Workspace</div><h1>{`${language === 'en' ? 'Hello' : 'Halo'}, ${user.name?.trim().split(/\s+/)[0] || 'Admin'} 👋`}</h1><p>{language === 'en' ? `Track content, visits, and cash flow for ${activeBrands.length} active brands.` : `Pantau konten, jadwal visit, dan arus kas untuk ${activeBrands.length} brand aktif.`}</p></div><div className="page-actions"><div className="month-switch"><button aria-label={language === 'en' ? 'Previous month' : 'Bulan sebelumnya'} onClick={() => moveMonth(-1)}><ChevronLeft size={17} /></button><span className="badge" style={{ minWidth: 110, justifyContent: 'center' }}>{currentMonthLabel}</span><button aria-label={language === 'en' ? 'Next month' : 'Bulan berikutnya'} onClick={() => moveMonth(1)}><ChevronRight size={17} /></button></div><button className="button" onClick={() => addRecord('content')}><Plus size={15} /> {language === 'en' ? 'New content' : 'Konten Baru'}</button><button className="button primary" onClick={() => addRecord('brand')}><Plus size={15} /> {language === 'en' ? 'New brand' : 'Brand Baru'}</button></div></div>
           <div className="grid kpis dashboard-kpis">
             <KPI label={`${language === 'en' ? 'Published content' : 'Konten tayang'} · ${idMonth(month, true)}`} value={contentSowTarget ? `${contentDone} / ${contentSowTarget}` : `${contentDone} ${language === 'en' ? 'published' : 'tayang'}`} foot={contentSowTarget ? (language === 'en' ? `SOW target across brands · ${monthContents.length} planned` : `Target SOW seluruh brand · ${monthContents.length} konten terencana`) : (language === 'en' ? 'SOW target not set' : 'Target SOW belum diatur')} icon={<ClipboardList size={16} />} />
             <KPI label={language === 'en' ? 'Income received' : 'Pendapatan diterima'} value={money(totalIncome)} foot={`${monthTransactions.filter((x) => x.type === 'income' && x.status === 'Lunas').length} ${language === 'en' ? 'invoices paid' : 'invoice lunas'}`} icon={<TrendingUp size={16} />} color="mint" />
@@ -285,7 +283,7 @@ function Workspace() {
     <RecordDialog key={modal ? `${modal.kind}-${String(modal.item?.id ?? 'new')}-${modal.performanceOnly ? 'performance' : 'full'}` : 'closed'} modal={modal} data={data} onClose={() => { setModal(null); setPendingProspectId(null) }} onSave={save} onDelete={remove} />
     <PasswordDialog open={passwordOpen} onClose={() => setPasswordOpen(false)} onSuccess={() => { setPasswordOpen(false); notify('Password berhasil diganti') }} />
     {toast && <div className="toast" role="status">{toast}</div>}
-  </>
+  </></WorkspaceProfileContext.Provider>
 }
 
 function KPI({ label, value, foot, icon, color = 'orange' }: { label: string; value: string; foot: string; icon: ReactNode; color?: string }) {
@@ -709,10 +707,7 @@ const schemaByKind: Record<Kind, z.ZodTypeAny> = {
 }
 const platforms = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Threads', 'Lainnya']
 const handledPlatformOptions = ['Instagram', 'TikTok', 'YouTube', 'Facebook', 'LinkedIn', 'Threads', 'Lainnya']
-const invoicePaymentPresets = [
-  { id: 'bca', accountName: 'Kadek Winda Mei Andani', bankName: 'Bank Central Asia (BCA)', accountNumber: '6115652935' },
-  { id: 'permata', accountName: 'Kadek Winda Mei Andani', bankName: 'Permata Bank', accountNumber: '9960358691' },
-]
+
 function RecordDialog({ modal, data, onClose, onSave, onDelete }: { modal: ModalState; data: Data; onClose: () => void; onSave: (kind: Kind, id: string | undefined, values: Record<string, unknown>, thumbnailFile?: File) => Promise<void>; onDelete: (kind: Kind, id: string, label: string) => Promise<boolean> }) {
   const language = useAppLanguage()
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
@@ -733,7 +728,7 @@ function RecordDialog({ modal, data, onClose, onSave, onDelete }: { modal: Modal
     visit: { brandId: defaultBrandId, date: today(), time: '09:00', location: '', notes: '' },
     brandNote: { brandId: defaultBrandId || (data.brands[0]?.id ?? ''), title: '', category: 'Follow-up', details: '', dueDate: '', isDone: false },
     prospect: { brandName: '', picName: '', contact: '', estimatedValue: 0, status: 'Prospek', sow: '', notes: '', nextFollowUpDate: '', nextAction: '' },
-    transaction: { type: 'income', brandId: data.brands.length === 1 ? data.brands[0].id : '', manualClientName: '', manualClientPhone: '', manualClientAddress: '', title: '', category: 'Retainer Client', amount: 0, items: [{ description: '', quantity: 1, unitPrice: 0 }], paymentAccountName: invoicePaymentPresets[0].accountName, paymentBankName: invoicePaymentPresets[0].bankName, paymentAccountNumber: invoicePaymentPresets[0].accountNumber, date: today(), status: 'Lunas', notes: '', inventory: { name: '', category: '', brand: '', model: '', serialNumber: '', buyerName: '', purchaseDate: '', purchaseMethod: '', purchaseDetails: '', purchasePrice: 0, quantity: 1, condition: 'Baru', status: 'Digunakan', location: '', notes: '' } },
+    transaction: { type: 'income', brandId: data.brands.length === 1 ? data.brands[0].id : '', manualClientName: '', manualClientPhone: '', manualClientAddress: '', title: '', category: 'Retainer Client', amount: 0, items: [{ description: '', quantity: 1, unitPrice: 0 }], paymentAccountName: '', paymentBankName: '', paymentAccountNumber: '', date: today(), status: 'Lunas', notes: '', inventory: { name: '', category: '', brand: '', model: '', serialNumber: '', buyerName: '', purchaseDate: '', purchaseMethod: '', purchaseDetails: '', purchasePrice: 0, quantity: 1, condition: 'Baru', status: 'Digunakan', location: '', notes: '' } },
   }
   const form = useForm<Record<string, any>>({ resolver: zodResolver(schemaByKind[modal?.kind || 'brand'] as never) as never, defaultValues: { ...base[modal?.kind || 'brand'], ...item, ...(modal?.kind === 'brand' ? { handledPlatforms: customHandledPlatform ? [...existingHandledPlatforms.filter((value) => value !== customHandledPlatform), 'Lainnya'] : existingHandledPlatforms, otherPlatformName: customHandledPlatform } : {}), ...(modal?.kind === 'transaction' && item.manualClientName ? { brandId: '__manual__' } : {}), ...(modal?.kind === 'content' ? { caption: [item.caption, item.cta ? `CTA: ${item.cta}` : '', item.hashtags ? `Hashtag: ${item.hashtags}` : ''].filter((value) => typeof value === 'string' && value.trim()).join('\n\n'), hook: [item.hook, item.brief].filter((value) => typeof value === 'string' && value.trim()).join('\n\n'), brief: '', hashtags: '', cta: '' } : {}), ...(linkedInventory ? { inventory: { name: linkedInventory.name, category: linkedInventory.category, brand: linkedInventory.brand, model: linkedInventory.model, serialNumber: linkedInventory.serialNumber, buyerName: linkedInventory.buyerName, purchaseDate: linkedInventory.purchaseDate ?? '', purchaseMethod: linkedInventory.purchaseMethod, purchaseDetails: linkedInventory.purchaseDetails, purchasePrice: linkedInventory.purchasePrice, quantity: linkedInventory.quantity, condition: linkedInventory.condition, status: linkedInventory.status, location: linkedInventory.location, notes: linkedInventory.notes } } : {}) } })
   const { register, control, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = form
@@ -746,13 +741,12 @@ function RecordDialog({ modal, data, onClose, onSave, onDelete }: { modal: Modal
   const paymentBankName = String(watch('paymentBankName') || '')
   const paymentAccountNumber = String(watch('paymentAccountNumber') || '')
   const savedCustomPayments = data.transactions
-    .filter((tx) => tx.paymentAccountName?.trim() && tx.paymentBankName?.trim() && tx.paymentAccountNumber?.trim() && !invoicePaymentPresets.some((preset) => preset.bankName === tx.paymentBankName && preset.accountNumber === tx.paymentAccountNumber))
+    .filter((tx) => tx.paymentAccountName?.trim() && tx.paymentBankName?.trim() && tx.paymentAccountNumber?.trim())
     .filter((tx, index, rows) => rows.findIndex((candidate) => candidate.paymentAccountName === tx.paymentAccountName && candidate.paymentBankName === tx.paymentBankName && candidate.paymentAccountNumber === tx.paymentAccountNumber) === index)
     .map((tx, index) => ({ ...tx, choiceId: `saved-custom-${index}` }))
   const selectedSavedPayment = savedCustomPayments.find((account) => account.paymentBankName === paymentBankName && account.paymentAccountNumber === paymentAccountNumber && account.paymentAccountName === String(watch('paymentAccountName') || ''))
-  const paymentDestination = invoicePaymentPresets.find((preset) => preset.bankName === paymentBankName && preset.accountNumber === paymentAccountNumber)?.id ?? selectedSavedPayment?.choiceId ?? 'other'
+  const paymentDestination = selectedSavedPayment?.choiceId ?? 'other'
   const paymentChoices = [
-    ...invoicePaymentPresets.map((preset) => ({ id: preset.id, label: `${preset.accountName} · ${preset.bankName} · ${preset.accountNumber}` })),
     ...savedCustomPayments.map((account) => ({ id: account.choiceId, label: `${account.paymentAccountName} · ${account.paymentBankName} · ${account.paymentAccountNumber}` })),
     { id: 'other', label: 'Input rekening manual' },
   ]
@@ -766,9 +760,8 @@ function RecordDialog({ modal, data, onClose, onSave, onDelete }: { modal: Modal
   const inventoryQuantity = Number(watch('inventory.quantity') || 0)
   const inventoryTotal = inventoryUnitPrice * inventoryQuantity
   const selectPaymentDestination = (presetId: string) => {
-    const preset = invoicePaymentPresets.find((option) => option.id === presetId)
     const savedAccount = savedCustomPayments.find((account) => account.choiceId === presetId)
-    const destination = preset ? { accountName: preset.accountName, bankName: preset.bankName, accountNumber: preset.accountNumber } : savedAccount ? { accountName: savedAccount.paymentAccountName, bankName: savedAccount.paymentBankName, accountNumber: savedAccount.paymentAccountNumber } : undefined
+    const destination = savedAccount ? { accountName: savedAccount.paymentAccountName, bankName: savedAccount.paymentBankName, accountNumber: savedAccount.paymentAccountNumber } : undefined
     setValue('paymentAccountName', destination?.accountName ?? '', { shouldValidate: true })
     setValue('paymentBankName', destination?.bankName ?? '', { shouldValidate: true })
     setValue('paymentAccountNumber', destination?.accountNumber ?? '', { shouldValidate: true })
@@ -825,7 +818,8 @@ function AuthView({ setupVisible, onComplete }: { setupVisible: boolean; onCompl
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [email, setEmail] = useState('')
-  const [name, setName] = useState('Admin Idaman')
+  const workspaceIdentity = useWorkspaceProfile()
+  const [name, setName] = useState('Admin')
   const [password, setPassword] = useState('')
   const [bootstrap, setBootstrap] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -857,7 +851,7 @@ function AuthView({ setupVisible, onComplete }: { setupVisible: boolean; onCompl
     } catch (cause) { setError((cause as Error).message || 'Setup admin gagal.') }
     finally { setBusy(false) }
   }
-  return <main className="auth-page"><section className="auth-art"><div className="brand-logo-panel"><img className="auth-art-logo" src="/api/workspace-logo" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/brand/idaman-creative-logo.png' }} alt="Idaman Creative" /></div><div><div className="eyebrow">Creative work, in good order.</div><h2>Satu ruang kerja untuk semua sisi agensi.</h2><p className="quote">Rencanakan konten, jaga hubungan klien, dan pahami kondisi bisnis dari satu workspace yang privat.</p></div><span className="brand-sub" style={{ color: '#bdb5aa' }}>Social media & agency workspace · Bali</span></section><section className="auth-form-wrap"><div className="auth-box"><img className="auth-logo" src="/api/workspace-logo" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/brand/idaman-creative-logo.png' }} alt="Idaman Creative" /><div className="eyebrow">{setup ? 'Initial secure setup' : 'Admin workspace'}</div><h1>{setup ? 'Buat akun admin' : 'Selamat datang kembali'}</h1><p>{setup ? 'Akun pertama menjadi satu-satunya admin. Setup ditutup otomatis setelah akun dibuat.' : 'Masuk dengan kredensial admin untuk membuka workspace.'}</p>
+  return <main className="auth-page"><section className="auth-art"><div className="brand-logo-panel"><WorkspaceLogo className="auth-art-logo" /></div><div><div className="eyebrow">Creative work, in good order.</div><h2>Satu ruang kerja untuk semua sisi agensi.</h2><p className="quote">Rencanakan konten, jaga hubungan klien, dan pahami kondisi bisnis dari satu workspace yang privat.</p></div><span className="brand-sub" style={{ color: '#bdb5aa' }}>Social media & agency workspace</span></section><section className="auth-form-wrap"><div className="auth-box"><WorkspaceLogo className="auth-logo" /><strong className="auth-workspace-name">{workspaceIdentity.name}</strong><div className="eyebrow">{setup ? 'Initial secure setup' : 'Admin workspace'}</div><h1>{setup ? 'Buat akun admin' : 'Selamat datang kembali'}</h1><p>{setup ? 'Akun pertama menjadi satu-satunya admin. Setup ditutup otomatis setelah akun dibuat.' : 'Masuk dengan kredensial admin untuk membuka workspace.'}</p>
       <form onSubmit={setup ? submitSetup : submitLogin}>{setup && <><div className="field"><label>Nama admin</label><input className="input" value={name} onChange={(event) => setName(event.target.value)} required maxLength={80} /></div><div className="field"><label>Email admin</label><input className="input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /><span className="field-hint">Gunakan email yang sama dengan secret ADMIN_EMAIL.</span></div><div className="field"><label>Token setup satu kali</label><input className="input" type="password" value={bootstrap} onChange={(event) => setBootstrap(event.target.value)} autoComplete="off" required minLength={32} /><span className="field-hint">Token harus cocok dengan secret ADMIN_BOOTSTRAP_TOKEN.</span></div></>}{!setup && <div className="field"><label>Email admin</label><input className="input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" required /></div>}<div className="field"><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}><label>Password {setup && <span className="muted">· minimal 8 karakter</span>}</label>{setup && <div className="page-actions"><button className="button" type="button" style={{ padding: '6px 8px', fontSize: 10 }} onClick={generatePassword}>Buat password acak</button>{password && <button className="button" type="button" style={{ padding: '6px 8px', fontSize: 10 }} onClick={() => void navigator.clipboard.writeText(password)}>Salin</button>}</div>}</div><div style={{ position: 'relative' }}><input className="input" style={{ paddingRight: 62 }} type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={setup ? 'new-password' : 'current-password'} minLength={setup ? 8 : undefined} maxLength={128} required /><button type="button" className="icon-button" style={{ position: 'absolute', right: 6, top: 4, fontSize: 10, width: 48 }} onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Sembunyi' : 'Lihat'}</button></div>{setup && <span className="field-hint">Password acak berisi 32 karakter. Simpan di password manager sebelum menyelesaikan setup.</span>}</div>{error && <div className="error" role="alert">{error}</div>}<button className="button primary" type="submit" disabled={busy}>{busy ? 'Memproses…' : setup ? 'Buat akun admin' : 'Masuk ke workspace'} <ArrowRight size={15} /></button></form>
       {setupVisible && <button className="button ghost" style={{ width: '100%', marginTop: 12 }} onClick={() => { setSetup(!setup); setError('') }}>{setup ? 'Kembali ke halaman login' : 'Setup admin pertama kali'}</button>}
     </div></section></main>

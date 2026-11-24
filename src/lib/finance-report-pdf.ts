@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { embedWorkspaceLogo } from './workspace-branding'
+import { embedWorkspaceLogo, fitPdfText } from './workspace-branding'
 import { loadWorkspaceProfile } from './workspace-profile'
 
 export type FinanceReportRow = {
@@ -25,7 +25,7 @@ const safeText = (value: unknown) => String(value ?? '').replace(/[\u0000-\u001f
 
 const rupiah = (value: number) => `Rp ${Math.round(value).toLocaleString('id-ID')}`
 
-export async function downloadFinanceReportPdf(month: string, rows: FinanceReportRow[], ytdIncome: number) {
+export async function createFinanceReportPdf(month: string, rows: FinanceReportRow[], ytdIncome: number) {
   const workspace = await loadWorkspaceProfile()
   const pdf = await PDFDocument.create()
   const logo = await embedWorkspaceLogo(pdf)
@@ -139,10 +139,14 @@ export async function downloadFinanceReportPdf(month: string, rows: FinanceRepor
 
   pdf.getPages().forEach((target) => {
     target.drawLine({ start: { x: margin, y: 38 }, end: { x: pageWidth - margin, y: 38 }, thickness: 0.5, color: border })
-    target.drawText(safeText(workspace.name), { x: margin, y: 24, size: 7, font: regular, color: muted })
+    target.drawText(fitPdfText(safeText(workspace.name), regular, 7, contentWidth - 70), { x: margin, y: 24, size: 7, font: regular, color: muted })
   })
 
-  const bytes = await pdf.save()
+  return pdf.save()
+}
+
+export async function downloadFinanceReportPdf(month: string, rows: FinanceReportRow[], ytdIncome: number) {
+  const bytes = await createFinanceReportPdf(month, rows, ytdIncome)
   const blob = new Blob([Uint8Array.from(bytes)], { type: 'application/pdf' })
   const url = URL.createObjectURL(blob)
   const anchor = document.createElement('a')

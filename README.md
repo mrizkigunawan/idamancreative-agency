@@ -1,4 +1,4 @@
-# Idaman Creative Agency Workspace
+# Agency Workspace
 
 A private operations workspace built with TanStack Start, Cloudflare Workers, D1, Drizzle ORM, and Better Auth.
 
@@ -10,6 +10,16 @@ A private operations workspace built with TanStack Start, Cloudflare Workers, D1
 - Content reference analysis for public Instagram, TikTok, and YouTube links, with a one-click prefilled content plan.
 - Zod-validated forms using React Hook Form. Better Auth stores sessions and persistent rate limits in D1.
 - Optional prototype sample data import for an empty workspace.
+
+## Workspace identity
+
+Use **Edit profil** in the account dropdown to set the workspace name, logo, and optional document signer's name. The saved identity is used on login, navigation, page titles, shared content plans, monthly reports, and generated PDFs. Before a name is configured, the app uses the neutral **Agency Workspace** identity and a generic logo.
+
+Document templates store `{{workspaceName}}` rather than an agency name. PDF generation resolves that marker using the latest saved profile. Custom text stays as written; clients' brand names remain separate. Existing document numbers and saved payment destinations are preserved. New invoices require an explicitly selected or entered payment destination.
+
+Migrations `0030` and `0031` update generic defaults and convert exact, unedited legacy template introductions to the marker. Apply migrations with `pnpm db:local` for local development and `pnpm db:remote` when deploying. Infrastructure resource identifiers in Wrangler, package scripts, and historical migrations retain their existing names so they continue to address the existing installation.
+
+Run `pnpm test:branding` with Node 24 and Python 3 to check profile isolation, templates, PDF identity, and migration data preservation. The installation supports one admin and one workspace profile per D1 database; this change does not add SaaS tenancy.
 
 ## Local development
 

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowLeft, KeyRound } from 'lucide-react'
 import { ProfileImageUpload } from './content-planner'
-import { defaultWorkspaceProfile } from '#/lib/workspace-profile'
+import { defaultWorkspaceLogo, normalizeWorkspaceProfile } from '#/lib/workspace-profile'
 import type { WorkspaceProfileDetails } from '#/lib/workspace-profile'
 
 type ProfilePageProps = {
@@ -36,24 +36,24 @@ export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceP
     const loadProfile = fetch('/api/workspace-profile', { cache: 'no-store' }).then(async (response) => {
       if (!response.ok) throw new Error('Profil workspace gagal dimuat. Muat ulang halaman sebelum menyimpan.')
       const profile = await response.json() as WorkspaceProfileDetails
-      if (active) setBusinessProfile({ ...defaultWorkspaceProfile, ...profile })
+      if (active) setBusinessProfile(normalizeWorkspaceProfile(profile))
     })
     const loadLogo = fetch('/api/workspace-logo', { cache: 'no-store' }).then(async (response) => {
       if (!response.ok) {
-        if (active) setWorkspaceLogo('/brand/idaman-creative-logo.png')
+        if (active) setWorkspaceLogo(defaultWorkspaceLogo)
         return
       }
       const blob = await response.blob()
       await new Promise<void>((resolve) => {
         const reader = new FileReader()
         reader.onload = () => {
-          if (active) setWorkspaceLogo(typeof reader.result === 'string' ? reader.result : '/brand/idaman-creative-logo.png')
+          if (active) setWorkspaceLogo(typeof reader.result === 'string' ? reader.result : defaultWorkspaceLogo)
           resolve()
         }
-        reader.onerror = () => { if (active) setWorkspaceLogo('/brand/idaman-creative-logo.png'); resolve() }
+        reader.onerror = () => { if (active) setWorkspaceLogo(defaultWorkspaceLogo); resolve() }
         reader.readAsDataURL(blob)
       })
-    }).catch(() => { if (active) setWorkspaceLogo('/brand/idaman-creative-logo.png') })
+    }).catch(() => { if (active) setWorkspaceLogo(defaultWorkspaceLogo) })
     Promise.all([loadProfile, loadLogo]).catch((cause: unknown) => {
       if (active) { setLoadFailed(true); setError(cause instanceof Error ? cause.message : 'Profil gagal dimuat.') }
     }).finally(() => { if (active) setLoading(false) })
@@ -67,7 +67,7 @@ export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceP
     setError('')
     try {
       await onUpdateUser(name.trim(), image.trim() || null)
-      const profileResponse = await fetch('/api/workspace-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: businessProfile.name.trim() }) })
+      const profileResponse = await fetch('/api/workspace-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: businessProfile.name.trim(), ownerName: businessProfile.ownerName.trim() }) })
       const profileResult = await profileResponse.json() as WorkspaceProfileDetails & { error?: string }
       if (!profileResponse.ok) throw new Error(profileResult.error || 'Nama brand gagal disimpan.')
       if (workspaceLogoReset) {
@@ -82,8 +82,8 @@ export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceP
       }
       setWorkspaceLogoChanged(false)
       setWorkspaceLogoReset(false)
-      setBusinessProfile({ ...defaultWorkspaceProfile, ...profileResult })
-      onWorkspaceProfileSaved({ ...defaultWorkspaceProfile, ...profileResult })
+      setBusinessProfile(normalizeWorkspaceProfile(profileResult))
+      onWorkspaceProfileSaved(normalizeWorkspaceProfile(profileResult))
       onSaved(name.trim(), image.trim() || null)
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : 'Profil gagal disimpan.')
@@ -111,8 +111,9 @@ export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceP
         <section className="card profile-page-card" aria-labelledby="workspace-heading">
           <div className="card-head"><div><h2 id="workspace-heading">Identitas workspace</h2><p>Nama brand dan logo agensi.</p></div></div>
           <label className="field"><span>Nama brand</span><input className="input" maxLength={120} value={businessProfile.name} onChange={(event) => setBusinessProfile({ ...businessProfile, name: event.target.value })} pattern=".*\S.*" required /></label>
+          <label className="field"><span>Penanggung jawab</span><input className="input" maxLength={120} value={businessProfile.ownerName} onChange={(event) => setBusinessProfile({ ...businessProfile, ownerName: event.target.value })} /><small className="field-hint">Nama penanda tangan dokumen. Kosongkan untuk menggunakan nama workspace.</small></label>
           <div className="workspace-brand-upload"><ProfileImageUpload label="Logo workspace" value={workspaceLogo} fit="contain" onChange={(value) => { setWorkspaceLogo(value); setWorkspaceLogoChanged(true); setWorkspaceLogoReset(false) }} onBusyChange={setLogoBusy} /></div>
-          <button type="button" className="button" onClick={() => { setWorkspaceLogoReset(true); setWorkspaceLogoChanged(false); setWorkspaceLogo('/brand/idaman-creative-logo.png') }}>Gunakan logo default</button>
+          <button type="button" className="button" onClick={() => { setWorkspaceLogoReset(true); setWorkspaceLogoChanged(false); setWorkspaceLogo(defaultWorkspaceLogo) }}>Gunakan logo default</button>
           {workspaceLogoReset && <small className="field-hint">Logo default akan diterapkan saat kamu menyimpan perubahan.</small>}
         </section>
         <div className="profile-page-save"><button type="button" className="button" onClick={onBack}>Batal</button><button className="button primary" type="submit" disabled={loading || busy || photoBusy || logoBusy}>{busy ? 'Menyimpan…' : photoBusy || logoBusy ? 'Memproses gambar…' : 'Simpan semua perubahan'}</button></div>

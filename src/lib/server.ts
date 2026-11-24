@@ -8,6 +8,8 @@ import { db } from './db'
 import { authUsers, brandNotes, brandSocialProfiles, brands, clientDocuments, contentThumbnails, contents, inventoryItems, prospects, socialReports, transactions, visits } from './schema'
 import { env } from 'cloudflare:workers'
 import demoData from './demo-data.json'
+import { getWorkspaceProfile } from './workspace-profile.server'
+import { publicWorkspaceIdentity } from './workspace-profile'
 
 async function requireAdmin() {
   const session = await auth.api.getSession({ headers: getRequestHeaders() })
@@ -146,12 +148,13 @@ export const saveSocialReport = createServerFn({ method: 'POST' }).validator((in
 })
 
 export const getAuthState = createServerFn({ method: 'GET' }).handler(async () => {
-  const [session, admin, setupSecret] = await Promise.all([
+  const [session, admin, setupSecret, workspace] = await Promise.all([
     auth.api.getSession({ headers: getRequestHeaders() }),
     db.select({ id: authUsers.id }).from(authUsers).limit(1),
     Promise.resolve(Boolean(env.ADMIN_BOOTSTRAP_TOKEN)),
+    getWorkspaceProfile(),
   ])
-  return { user: session?.user ?? null, needsSetup: admin.length === 0, setupEnabled: admin.length === 0 && setupSecret }
+  return { workspace: session ? workspace : publicWorkspaceIdentity(workspace), user: session?.user ?? null, needsSetup: admin.length === 0, setupEnabled: admin.length === 0 && setupSecret }
 })
 
 function safeHttpsUrl(value: string) { try { return new URL(value).protocol === 'https:' } catch { return false } }
@@ -220,7 +223,7 @@ export const saveRecord = createServerFn({ method: 'POST' }).validator((input: u
     const [existing] = data.id ? await db.select({ inventoryItemId: transactions.inventoryItemId }).from(transactions).where(eq(transactions.id, data.id)).limit(1) : []
     const shouldCreateInventory = transactionValues.type === 'expense' && transactionValues.category === 'Inventaris' && Boolean(inventory)
     const inventoryId = shouldCreateInventory ? existing?.inventoryItemId ?? crypto.randomUUID() : existing?.inventoryItemId ?? null
-    const transactionRow = { ...transactionValues, id, inventoryItemId: inventoryId }
+    const transactionRow = { ...transactionValues, paymentAccountName: transactionValues.paymentAccountName ?? '', paymentBankName: transactionValues.paymentBankName ?? '', paymentAccountNumber: transactionValues.paymentAccountNumber ?? '', id, inventoryItemId: inventoryId }
     if (shouldCreateInventory && inventory) {
       const now = Date.now()
       const inventoryValues = { ...inventory, linkedTransactionId: id, updatedAt: now }
@@ -328,7 +331,7 @@ export const seedDemoData = createServerFn({ method: 'POST' }).handler(async () 
   await db.insert(transactions).values(demoData.finances.map((item) => ({
     ...item,
     brandId: item.type === 'income' ? demoData.brands.find((brand) => item.title.includes(brand.name))?.id ?? null : null,
-    notes: '',
+    notes: '', paymentAccountName: '', paymentBankName: '', paymentAccountNumber: '',
   })))
   return { ok: true }
 })
@@ -442,7 +445,7 @@ async function readReferencePage(startUrl: URL) {
   let current = startUrl
   let response: Response | null = null
   for (let redirects = 0; redirects <= 4; redirects++) {
-    response = await fetch(current, { redirect: 'manual', headers: { accept: 'text/html,application/xhtml+xml', 'user-agent': 'IdamanCreativeContentResearch/1.0' }, signal: AbortSignal.timeout(8000) })
+    response = await fetch(current, { redirect: 'manual', headers: { accept: 'text/html,application/xhtml+xml', 'user-agent': 'AgencyWorkspaceContentResearch/1.0' }, signal: AbortSignal.timeout(8000) })
     if (response.status < 300 || response.status >= 400) break
     const location = response.headers.get('location')
     if (!location || redirects === 4) throw new Error('Tautan terlalu banyak mengalihkan halaman.')

@@ -1,6 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
-import { embedWorkspaceLogo } from './workspace-branding'
+import { embedWorkspaceLogo, fitPdfText } from './workspace-branding'
 import { loadWorkspaceProfile } from './workspace-profile'
+import { resolveWorkspaceName } from './client-document-templates'
 import type { brands, clientDocuments } from './schema'
 
 type Brand = typeof brands.$inferSelect
@@ -102,7 +103,7 @@ export async function createClientDocumentPdf(brand: Brand, document: ClientDocu
       page.drawImage(logo, { x: margin, y: height - 77, width: fitted.width, height: fitted.height })
     }
   } catch { /* Use the text identity if the logo is unavailable. */ }
-  page.drawText(clean(workspace.name.toLocaleUpperCase('id-ID')).slice(0, 34), { x: width - margin - 126, y: height - 47, size: 8, font: bold, color: muted })
+  page.drawText(fitPdfText(clean(workspace.name.toLocaleUpperCase('id-ID')), bold, 8, 126), { x: width - margin - 126, y: height - 47, size: 8, font: bold, color: muted })
   const titleLines = wrap(clean(printTitle), bold, 16, contentWidth)
   y = height - 123
   for (const titleLine of titleLines.slice(0, 2)) { page.drawText(titleLine, { x: margin, y, size: 16, font: bold, color: ink }); y -= 21 }
@@ -122,7 +123,7 @@ export async function createClientDocumentPdf(brand: Brand, document: ClientDocu
   }
   for (const [index, section] of document.sections.entries()) {
     const heading = clean(section.heading)
-    const body = section.body.trim()
+    const body = resolveWorkspaceName(section.body, workspace.name).trim()
     if (!heading && !body) continue
     ensure(48)
     if (heading) {
@@ -144,13 +145,13 @@ export async function createClientDocumentPdf(brand: Brand, document: ClientDocu
       page.drawRectangle({ x: colX, y: y - 100, width: colWidth, height: 100, borderColor: line, borderWidth: 0.8, color: rgb(1, 1, 1) })
       page.drawText(role, { x: colX + 12, y: y - 18, size: 7.5, font: bold, color: muted })
       page.drawLine({ start: { x: colX + 12, y: y - 68 }, end: { x: colX + colWidth - 12, y: y - 68 }, thickness: 0.7, color: line })
-      page.drawText(index === 0 ? 'Winda Mei Andani' : clean(brand.owner || brand.name).slice(0, 50), { x: colX + 12, y: y - 86, size: 8.5, font: regular, color: ink })
+      page.drawText(fitPdfText(clean(index === 0 ? workspace.ownerName || workspace.name : brand.owner || brand.name), regular, 8.5, colWidth - 24), { x: colX + 12, y: y - 86, size: 8.5, font: regular, color: ink })
     }
   }
 
   pages.forEach((target, index) => {
     target.drawLine({ start: { x: margin, y: 43 }, end: { x: width - margin, y: 43 }, thickness: 0.6, color: line })
-    target.drawText(`${clean(workspace.name)}  ·  ${clean(document.documentNumber || document.title).slice(0, 54)}`, { x: margin, y: 29, size: 7, font: italic, color: muted })
+    target.drawText(fitPdfText(`${clean(workspace.name)}  ·  ${clean(document.documentNumber || document.title).slice(0, 54)}`, italic, 7, contentWidth - 50), { x: margin, y: 29, size: 7, font: italic, color: muted })
     target.drawText(`${index + 1} / ${pages.length}`, { x: width - margin - 35, y: 29, size: 7, font: regular, color: muted })
   })
   return pdf.save()

@@ -1,4 +1,4 @@
-# Panduan Idaman Creative untuk pengenalan dan demo
+# Panduan workspace agensi untuk pengenalan dan demo
 
 Dokumen ini menjelaskan fungsi aplikasi, fitur, dan langkah penggunaannya. Bagian akhir memuat rancangan video stop motion untuk audiens Indonesia.
 
@@ -8,9 +8,9 @@ Dasar peninjauan: kode aplikasi di proyek ini, termasuk tampilan, proses penyimp
 
 ## 1. Sistem ini sebenarnya apa
 
-Idaman Creative adalah aplikasi web untuk mengelola pekerjaan agensi kreatif dan pengelolaan media sosial. Pengguna dapat mencatat calon klien, menyusun penawaran, mengatur pekerjaan konten, memantau target, dan mencatat keuangan dalam satu tempat.
+Workspace agensi adalah aplikasi web untuk mengelola pekerjaan agensi kreatif dan pengelolaan media sosial. Pengguna dapat mencatat calon klien, menyusun penawaran, mengatur pekerjaan konten, memantau target, dan mencatat keuangan dalam satu tempat.
 
-Nama yang digunakan proyek adalah Idaman Creative Agency Workspace. Nama dan logo ruang kerja dapat diganti. Nama produk komersialnya perlu ditetapkan pemilik jika ingin dipasarkan dengan merek tersendiri.
+Nama dan logo ruang kerja mengikuti pengaturan pada halaman profil. Sebelum dikonfigurasi, nama default yang digunakan adalah Agency Workspace. Nama produk komersialnya perlu ditetapkan pemilik jika ingin dipasarkan dengan merek tersendiri.
 
 Contoh penggunaannya: agensi menangani tiga brand. Setiap brand punya kontak, paket layanan, jadwal produksi, dan rencana konten berbeda. Aplikasi menghubungkan catatan tersebut agar pengelola bisa melihat pekerjaan yang perlu diselesaikan.
 
@@ -111,7 +111,7 @@ Jika aplikasi belum memiliki admin, pengelola perlu menyelesaikan setup pertama.
 
 Halaman tetap terbuka setelah perubahan disimpan. Gunakan **Kembali ke workspace** untuk kembali bekerja. Penggantian kata sandi tersedia di bagian **Keamanan akun** pada halaman profil.
 
-Nama brand ruang kerja adalah identitas agensi. Data klien dibuat melalui menu Brand & SOW.
+Nama brand ruang kerja adalah identitas agensi dan digunakan pada halaman masuk, judul halaman, dokumen, laporan, serta tautan tinjauan. Nama penanggung jawab menjadi penanda tangan dokumen; jika kosong, nama workspace digunakan. Teks template mengikuti nama terbaru, sedangkan teks kustom tetap dipertahankan. Data klien dibuat melalui menu Brand & SOW.
 
 ### Langkah 3 — Catat calon klien
 
@@ -324,7 +324,7 @@ Gunakan satu brand fiktif, misalnya Kedai Pagi. Durasi berikut adalah usulan pen
 | 48–55 detik | Tampilkan agenda posting dan jadwal visit. | “Lihat jadwal konten dan kunjungan produksi.” |
 | 55–62 detik | Sisipkan keterangan bahwa publikasi dilakukan di platform, lalu ubah status ke Uploaded. | “Setelah tayang di media sosial, perbarui status dan catat hasilnya.” |
 | 62–70 detik | Tampilkan data laporan, kemudian pratinjau PDF. | “Susun laporan bulanan dari data yang sudah kamu catat.” |
-| 70–75 detik | Kembali ke Beranda dan tampilkan nama produk. | “Kenali alur kerja Idaman Creative.” |
+| 70–75 detik | Kembali ke Beranda dan tampilkan nama produk. | “Kenali alur kerja [nama workspace].” |
 
 Ajakan penutup dapat diganti menjadi “Hubungi kami untuk demo” setelah pemilik menentukan kontak dan cara layanan diberikan.
 

@@ -27,6 +27,14 @@
 .profile-signout .error{margin:6px 10px;font-size:11px}
 .mobile-account-actions{display:flex;align-items:center;gap:10px}
 .profile-page{max-width:1060px;margin:0 auto}
+.workspace-brand-copy{flex:1;min-width:0}
+.workspace-brand-name{display:block;max-width:100%;margin:0;font-size:13px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.workspace-brand-copy .brand-sub{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brandmark .brand-logo{width:44px;height:44px;object-fit:contain}
+.topbar>span{min-width:0;overflow-wrap:anywhere}
+.top-actions{flex-shrink:0}
+.report-print-header strong{max-width:70%;text-align:right;overflow-wrap:anywhere}
+.auth-workspace-name{display:block;margin:-8px 0 22px;font-size:18px;line-height:1.4;overflow-wrap:anywhere}
 .profile-back{display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;padding:0;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;cursor:pointer}
 .profile-back:hover{color:var(--ink)}
 .profile-page h1:focus{outline:none}
