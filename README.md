@@ -41,13 +41,12 @@ Content analysis uses the Cloudflare Workers AI binding configured in `wrangler.
    pnpm install
    ```
 
-2. Create local secrets in `.dev.vars` (this file is ignored by Git). Generate both keys with `openssl rand -hex 32` and use different values:
+2. Create local secrets in `.dev.vars` (this file is ignored by Git). Generate the auth secret with `openssl rand -hex 32`:
 
    ```dotenv
    BETTER_AUTH_URL=http://localhost:3000
    BETTER_AUTH_SECRET=replace-with-a-random-64-character-hex-secret
    ADMIN_EMAIL=you@example.com
-   ADMIN_BOOTSTRAP_TOKEN=replace-with-a-different-random-64-character-hex-token
    ```
 
 3. Apply the D1 migrations and start the app:
@@ -57,11 +56,19 @@ Content analysis uses the Cloudflare Workers AI binding configured in `wrangler.
    pnpm dev
    ```
 
-4. Open `http://localhost:3000`, choose **Setup admin pertama kali**, enter the exact `ADMIN_EMAIL` and `ADMIN_BOOTSTRAP_TOKEN`, and choose a unique password with at least 8 characters. The database enforces a single account, and registration is denied after it is created.
+4. In another terminal, generate the owner’s activation link:
+
+   ```sh
+   pnpm setup:link --local
+   ```
+
+   This reads `ADMIN_EMAIL` and `BETTER_AUTH_URL` from `.dev.vars`. Open the printed link, enter your name and a unique password (at least 8 characters), and click **Aktifkan workspace**. The approved email is already filled in. Activation signs you in automatically.
 
 Use the exact origin configured in `BETTER_AUTH_URL`, including the protocol, hostname, and port. `http://localhost:3000` and `http://127.0.0.1:3000` are different origins; opening one while configuring the other causes Better Auth to reject signup with `Invalid origin`. Restart `pnpm dev` after changing `.dev.vars`. `Using secrets defined in .dev.vars` is an informational message, not an error.
 
-Keep `ADMIN_BOOTSTRAP_TOKEN` until the admin account is created. After setup, remove it from `.dev.vars` and the Cloudflare Worker secrets. If the first setup token is lost before an admin is created, set a new one. Do not put passwords or tokens in source control.
+Activation links expire 30 minutes after generation. Run the same command again to replace a lost or expired link; every replacement invalidates the previous one. Opening a link does not consume it. Registration closes when the account and password credential are successfully created. Existing installations keep their account and normal login.
+
+`ADMIN_BOOTSTRAP_TOKEN` is no longer used. Remove that old variable from `.dev.vars` and Worker secrets when convenient. Do not put passwords or activation links in source control.
 
 ## Cloudflare deployment
 
@@ -79,16 +86,15 @@ Keep `ADMIN_BOOTSTRAP_TOKEN` until the admin account is created. After setup, re
    pnpm db:remote
    ```
 
-3. Set Worker secrets. Use separate random values for the auth secret and one-time bootstrap token:
+3. Set Worker secrets. Use a long, random value for the auth secret:
 
    ```sh
    pnpm exec wrangler secret put BETTER_AUTH_SECRET
    pnpm exec wrangler secret put ADMIN_EMAIL
-   pnpm exec wrangler secret put ADMIN_BOOTSTRAP_TOKEN
    pnpm exec wrangler secret put BETTER_AUTH_URL
    ```
 
-   Set `BETTER_AUTH_URL` to the exact deployed `https://…` origin. Keep the setup token until the first admin account is created, then remove it with `pnpm exec wrangler secret delete ADMIN_BOOTSTRAP_TOKEN`.
+   Set `BETTER_AUTH_URL` to the exact deployed `https://…` origin and `ADMIN_EMAIL` to the approved owner’s email.
 
 4. Build and deploy:
 
@@ -96,9 +102,25 @@ Keep `ADMIN_BOOTSTRAP_TOKEN` until the admin account is created. After setup, re
    pnpm deploy
    ```
 
-5. Open the deployment URL and complete the one-time admin setup. Use a unique password of at least 8 characters; the setup form never supplies or stores a default password. Store it in a password manager.
+5. After deployment, generate a one-time activation link:
+
+   ```sh
+   pnpm setup:link --remote --email owner@example.com --origin https://your-workspace.example
+   ```
+
+   The command uses `wrangler.production.jsonc` and requires the installer’s Cloudflare access. Email/origin must match the Worker’s `ADMIN_EMAIL`/`BETTER_AUTH_URL`. Share the link privately with the owner, who only needs to enter a name and password. Automatic email delivery is not configured.
 
 To regenerate Workers binding types after changing `wrangler.jsonc`, run `pnpm cf-typegen`.
+
+## Admin activation security and maintenance
+
+Migration `0033_admin_activation.sql` adds a single installation grant containing only a SHA-256 token digest and an expiry. It marks existing installations as already activated. The token travels in a URL fragment, so it is not sent in page URLs or referrers. The browser removes that fragment and exchanges it for a short-lived HttpOnly, SameSite=Strict cookie (Secure on HTTPS), allowing the form to survive a refresh. Only a valid link reveals the approved email.
+
+The activation endpoint runs inside Better Auth with its origin checks and persistent rate limits. It hashes the password using Better Auth, then atomically writes the user, credential, and consumed grant in a D1 batch. It rechecks the token, configured email, expiry, and absence of another admin inside that write. A failed database write preserves the link. Automatic sign-in uses Better Auth’s session/cookie handling; if session creation fails, the completed account can still sign in normally.
+
+Public email signup and the old bootstrap header are disabled. The database still enforces one admin, and a completion marker prevents issuing another activation link even after the account is removed. Activation is not an account recovery mechanism and does not prove mailbox ownership; an installer privately authorizes the configured email. Password recovery/email delivery remain separate work.
+
+Use `pnpm setup:link --help` for a custom Wrangler config or local state directory. The command prints a link only after the selected database accepts its digest. Never run it against production for testing. Run `pnpm test:activation` with Node 24 to check expiry, replacement, replay, concurrency, rollback, password compatibility, and existing-account preservation.
 
 ## Data and migrations
 

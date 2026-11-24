@@ -148,13 +148,12 @@ export const saveSocialReport = createServerFn({ method: 'POST' }).validator((in
 })
 
 export const getAuthState = createServerFn({ method: 'GET' }).handler(async () => {
-  const [session, admin, setupSecret, workspace] = await Promise.all([
+  const [session, admin, workspace] = await Promise.all([
     auth.api.getSession({ headers: getRequestHeaders() }),
     db.select({ id: authUsers.id }).from(authUsers).limit(1),
-    Promise.resolve(Boolean(env.ADMIN_BOOTSTRAP_TOKEN)),
     getWorkspaceProfile(),
   ])
-  return { workspace: session ? workspace : publicWorkspaceIdentity(workspace), user: session?.user ?? null, needsSetup: admin.length === 0, setupEnabled: admin.length === 0 && setupSecret }
+  return { workspace: session ? workspace : publicWorkspaceIdentity(workspace), user: session?.user ?? null, needsSetup: admin.length === 0 }
 })
 
 function safeHttpsUrl(value: string) { try { return new URL(value).protocol === 'https:' } catch { return false } }

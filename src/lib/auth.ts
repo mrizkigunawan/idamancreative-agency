@@ -2,15 +2,7 @@ import { betterAuth } from 'better-auth'
 import { APIError } from 'better-auth/api'
 import { tanstackStartCookies } from 'better-auth/tanstack-start'
 import { env } from 'cloudflare:workers'
-
-async function matchesSecret(provided: string, expected: string) {
-  const encoder = new TextEncoder()
-  const [providedHash, expectedHash] = await Promise.all([
-    crypto.subtle.digest('SHA-256', encoder.encode(provided)),
-    crypto.subtle.digest('SHA-256', encoder.encode(expected)),
-  ])
-  return crypto.subtle.timingSafeEqual(providedHash, expectedHash)
-}
+import { adminActivation } from './admin-activation.server'
 
 export const auth = betterAuth({
   database: env.DB,
@@ -19,28 +11,19 @@ export const auth = betterAuth({
   trustedOrigins: [env.BETTER_AUTH_URL || 'http://localhost:3000'],
   emailAndPassword: {
     enabled: true,
+    disableSignUp: true,
     minPasswordLength: 8,
     maxPasswordLength: 128,
   },
-  rateLimit: { window: 60, max: 5, storage: 'database' },
+  rateLimit: { enabled: true, window: 60, max: 5, storage: 'database' },
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
-  advanced: { crossSubDomainCookies: { enabled: false } },
+  advanced: { crossSubDomainCookies: { enabled: false }, ipAddress: { ipAddressHeaders: ['cf-connecting-ip'] } },
   databaseHooks: {
     user: {
       create: {
-        before: async (user, ctx) => {
-          const bootstrapToken = ctx?.headers?.get('x-admin-bootstrap')
-          const expectedToken = env.ADMIN_BOOTSTRAP_TOKEN
-          const allowedEmail = env.ADMIN_EMAIL?.trim().toLowerCase()
-          const account = await env.DB.prepare('SELECT id FROM "user" LIMIT 1').first()
-          const validBootstrap = expectedToken && bootstrapToken ? await matchesSecret(bootstrapToken, expectedToken) : false
-          if (account || !validBootstrap || !allowedEmail || user.email.toLowerCase() !== allowedEmail) {
-            throw new APIError('FORBIDDEN', { message: 'Admin setup is unavailable.' })
-          }
-          return { data: { ...user, emailVerified: true } }
-        },
+        before: async () => { throw new APIError('FORBIDDEN', { message: 'Gunakan tautan aktivasi dari pengelola instalasi.' }) },
       },
     },
   },
-  plugins: [tanstackStartCookies()],
+  plugins: [adminActivation(env.DB, env.ADMIN_EMAIL), tanstackStartCookies()],
 })

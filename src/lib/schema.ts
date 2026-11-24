@@ -129,3 +129,9 @@ export const authUsers = sqliteTable('user', {
   id: text('id').primaryKey(), name: text('name').notNull(), email: text('email').notNull().unique(), emailVerified: integer('emailVerified', { mode: 'boolean' }).notNull().default(false),
   image: text('image'), createdAt: integer('createdAt', { mode: 'timestamp_ms' }).notNull(), updatedAt: integer('updatedAt', { mode: 'timestamp_ms' }).notNull(),
 })
+
+export const adminSetup = sqliteTable('admin_setup', {
+  id: text('id').primaryKey(), tokenHash: text('token_hash').notNull(), email: text('email').notNull(),
+  createdAt: integer('created_at').notNull(), expiresAt: integer('expires_at').notNull(),
+  consumedAt: integer('consumed_at'), completedUserId: text('completed_user_id'),
+})

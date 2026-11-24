@@ -1,5 +1,6 @@
 import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { createAuthClient } from 'better-auth/react'
+import { authClient } from '#/lib/auth-client'
+import { AuthView } from '#/components/auth-view'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { addMonths, format, getDaysInMonth, getDay, parseISO, startOfMonth, subMonths } from 'date-fns'
@@ -25,7 +26,7 @@ import { analyzeInstagramCover, getAuthState, getPageData, moveProspectDocuments
 import { ContentPlanShareButton, InstagramFeedPlanner, InstagramProfilePlanner } from '#/components/content-planner'
 import type { brandNotes, brandSocialProfiles, brands, contents, visits, prospects, transactions, socialReports, inventoryItems } from '#/lib/schema'
 import { normalizeWorkspaceProfile, workspaceTitle } from '#/lib/workspace-profile'
-import { WorkspaceBrand, WorkspaceLogo, WorkspaceProfileContext, useWorkspaceProfile } from '#/components/workspace-identity'
+import { WorkspaceBrand, WorkspaceProfileContext } from '#/components/workspace-identity'
 import type { WorkspaceProfileDetails } from '#/lib/workspace-profile'
 
 export const Route = createFileRoute('/')({
@@ -35,7 +36,6 @@ export const Route = createFileRoute('/')({
   component: Workspace,
 })
 
-const authClient = createAuthClient()
 type Kind = 'brand' | 'content' | 'visit' | 'brandNote' | 'prospect' | 'transaction'
 type Brand = typeof brands.$inferSelect
 type Content = typeof contents.$inferSelect
@@ -72,7 +72,6 @@ function Workspace() {
   const authState = Route.useLoaderData()
   const router = useRouter()
   const [user, setUser] = useState(authState.user)
-  const [setupVisible, setSetupVisible] = useState(authState.setupEnabled)
   const [data, setData] = useState<Data>({ brands: [], contents: [], visits: [], brandNotes: [], prospects: [], transactions: [], reports: [], inventory: [], socialProfiles: [] })
   const [workspaceProfile, setWorkspaceProfile] = useState<WorkspaceProfileDetails>(() => normalizeWorkspaceProfile(authState.workspace))
   const [loading, setLoading] = useState(Boolean(authState.user))
@@ -98,7 +97,7 @@ function Workspace() {
   const [toast, setToast] = useState('')
   const language: AppLanguage = 'id' as AppLanguage
 
-  useEffect(() => { setUser(authState.user); setSetupVisible(authState.setupEnabled); setWorkspaceProfile(normalizeWorkspaceProfile(authState.workspace)) }, [authState])
+  useEffect(() => { setUser(authState.user); setWorkspaceProfile(normalizeWorkspaceProfile(authState.workspace)) }, [authState])
   useEffect(() => { if (typeof document !== 'undefined') document.title = workspaceTitle(workspaceProfile.name) }, [workspaceProfile.name])
   useEffect(() => {
     if (!user) { setLoading(false); return }
@@ -170,7 +169,7 @@ function Workspace() {
   }
 
   if (loading) return <><WorkspaceTheme appearance={workspaceProfile} /><div className="loading">Memuat workspace…</div></>
-  if (!user) return <WorkspaceProfileContext.Provider value={workspaceProfile}><WorkspaceTheme appearance={workspaceProfile} /><AuthView setupVisible={setupVisible} onComplete={async () => { await router.invalidate(); const state = await getAuthState(); setUser(state.user); setSetupVisible(state.setupEnabled); setWorkspaceProfile(normalizeWorkspaceProfile(state.workspace)) }} /></WorkspaceProfileContext.Provider>
+  if (!user) return <WorkspaceProfileContext.Provider value={workspaceProfile}><WorkspaceTheme appearance={workspaceProfile} /><AuthView needsSetup={authState.needsSetup} onComplete={async () => { await router.invalidate(); const state = await getAuthState(); setUser(state.user); setWorkspaceProfile(normalizeWorkspaceProfile(state.workspace)) }} /></WorkspaceProfileContext.Provider>
 
   const addRecord = (kind: Kind, defaults?: Record<string, unknown>, performanceOnly = false) => {
 
@@ -816,50 +815,6 @@ function RecordDialog({ modal, data, onClose, onSave, onDelete }: { modal: Modal
       {kind === 'transaction' && <><RecordField form={form} name="type" label="Jenis transaksi" options={['income', 'expense']} />{transactionType === 'income' && <><RecordField form={form} name="title" label="Judul internal · opsional" placeholder="Kosongkan jika tidak perlu" /><RecordField form={form} name="category" label="Jenis pemasukan" options={['Retainer Client', 'Project', 'Add-on', 'Reimburse', 'Lainnya']} />{brandSelect}{transactionManualClient && <><RecordField form={form} name="manualClientName" label="Nama klien" placeholder="Nama customer / klien" /><RecordField form={form} name="manualClientPhone" label="Telepon / WhatsApp" placeholder="Opsional" /><RecordField form={form} name="manualClientAddress" label="Alamat" placeholder="Opsional" /></>}<div className="field wide invoice-items-field"><div className="invoice-items-heading"><strong>Rincian invoice</strong><span>Retainer, visit satu kali, dan project</span></div>{invoiceItemArray.fields.map((line, index) => <div className="invoice-item-row" key={line.id}><label><span>Item</span><input className="input" placeholder="Retainer bulanan, Visit / shooting 1x…" {...register(`items.${index}.description`)} /></label><label><span>Qty</span><input className="input" type="number" min="1" step="1" {...register(`items.${index}.quantity`, { valueAsNumber: true })} /></label><label><span>Harga satuan</span><input className="input" type="number" min="0" step="1000" {...register(`items.${index}.unitPrice`, { valueAsNumber: true })} /></label><button type="button" className="icon-button invoice-item-remove" title="Hapus item" disabled={invoiceItemArray.fields.length <= 1} onClick={() => invoiceItemArray.remove(index)}><Trash2 size={14} /></button></div>)}<div className="invoice-items-footer"><div className="actions"><button type="button" className="button" disabled={invoiceItemArray.fields.length >= 8} onClick={() => invoiceItemArray.append({ description: '', quantity: 1, unitPrice: 0 })}><Plus size={14} /> Tambah item</button></div><strong>Total {money(invoiceTotal)}</strong></div>{errors.items && <span className="error">Isi nama item, qty, dan harga. Maksimal 8 item per invoice.</span>}<input type="hidden" {...register('amount')} />{errors.amount && <span className="error">{String(errors.amount.message || 'Periksa total invoice.')}</span>}</div><div className="field wide invoice-items-field"><div className="invoice-items-heading"><strong>Rekening tujuan pembayaran</strong><span>Detail ini dicetak di invoice</span></div><label className="field"><span>Pilih rekening</span><div className="payment-account-picker"><input className="input" value={paymentListOpen ? paymentSearch : paymentChoiceLabel} placeholder="Cari nama, bank, atau nomor rekening" onFocus={() => { setPaymentSearch(''); setPaymentListOpen(true) }} onBlur={() => window.setTimeout(() => setPaymentListOpen(false), 140)} onChange={(event) => { setPaymentSearch(event.target.value); setPaymentListOpen(true) }} />{paymentListOpen && <div className="payment-account-options" role="listbox" aria-label="Daftar rekening">{filteredPaymentChoices.length ? filteredPaymentChoices.map((choice) => <button type="button" className="payment-account-option" key={choice.id} onMouseDown={(event) => event.preventDefault()} onClick={() => { selectPaymentDestination(choice.id); setPaymentListOpen(false) }}>{choice.label}</button>) : <span className="payment-account-empty">Tidak ada rekening yang cocok.</span>}</div>}</div></label><div className="form-grid"><RecordField form={form} name="paymentAccountName" label="Atas nama" placeholder="Nama pemilik rekening" /><RecordField form={form} name="paymentBankName" label="Nama bank" placeholder="Contoh: Bank Mandiri" /><RecordField form={form} name="paymentAccountNumber" label="Nomor rekening" placeholder="Masukkan nomor rekening" /></div></div></>}{transactionType === 'expense' && <><RecordField form={form} name="title" label="Deskripsi" placeholder="Contoh: Pembelian perlengkapan" /><RecordField form={form} name="category" label="Kategori" options={['Operasional Visit', 'Gaji Tim / Freelancer', 'Langganan Software', 'Transportasi', 'Marketing / Iklan / Ads', 'Inventaris', 'Peralatan', 'Pajak', 'Saving', 'Lainnya']} />{transactionCategory === 'Inventaris' && <div className="field wide invoice-items-field"><div className="invoice-items-heading"><strong>Detail barang inventaris</strong><span>Data tersimpan sekaligus ke Inventaris</span></div><div className="form-grid"><RecordField form={form} name="inventory.name" label="Nama barang *" placeholder="Contoh: Kamera mirrorless" /><RecordField form={form} name="inventory.category" label="Kategori inventaris" placeholder="Kamera, audio, komputer…" /><RecordField form={form} name="inventory.brand" label="Merek" /><RecordField form={form} name="inventory.model" label="Tipe / model" /><RecordField form={form} name="inventory.purchasePrice" label="Harga per unit (Rp)" type="number" /><RecordField form={form} name="inventory.quantity" label="Jumlah unit" type="number" /><RecordField form={form} name="inventory.purchaseDate" label="Tanggal pembelian · opsional" type="date" /><RecordField form={form} name="inventory.buyerName" label="Nama pembeli" /><RecordField form={form} name="inventory.purchaseMethod" label="Dibeli melalui" options={['', 'Marketplace online', 'COD', 'Facebook Marketplace', 'Toko fisik', 'Lainnya']} /><RecordField form={form} name="inventory.purchaseDetails" label="Nama marketplace / toko / lokasi" placeholder="Shopee · Toko Kamera Bali" /><RecordField form={form} name="inventory.condition" label="Kondisi" options={['Baru', 'Sangat baik', 'Baik', 'Perlu servis']} /><RecordField form={form} name="inventory.location" label="Lokasi penyimpanan" /><RecordField form={form} name="inventory.notes" label="Catatan barang" type="textarea" wide /></div><div className="invoice-items-footer"><span>Total pengeluaran otomatis dihitung dari harga per unit × jumlah</span><strong>{money(inventoryTotal)}</strong></div>{errors.inventory && <span className="error">Lengkapi data barang inventaris.</span>}</div>}<RecordField form={form} name="amount" label="Jumlah (Rp)" type="number" /></>}<RecordField form={form} name="date" label="Tanggal" type="date" /><RecordField form={form} name="status" label="Status pembayaran" options={['Lunas', 'Belum Dibayar']} /><RecordField form={form} name="notes" label="Catatan" type="textarea" wide /></>}
   </div>{submissionError && <div className="error" role="alert">{submissionError}</div>}<div className="modal-foot">{idValue && !modal.performanceOnly && (kind === 'content' || kind === 'visit') && <button type="button" className="button danger" onClick={async () => { const label = kind === 'content' ? String(item.title || 'konten') : `visit ${String(item.date || '')}`; if (await onDelete(kind, idValue, label)) onClose() }}><Trash2 size={14} /> Hapus {kind === 'content' ? 'konten' : 'visit'}</button>}<button type="button" className="button" onClick={onClose}>{uiText(language, 'Batal')}</button><button type="submit" className="button primary" disabled={isSubmitting || Boolean(thumbnailFile && thumbnailFile.size > 1_600_000)}>{isSubmitting ? 'Menyimpan…' : 'Simpan perubahan'}</button></div>
   </form>}</Dialog.Content></Dialog.Portal></Dialog.Root>
-}
-
-function AuthView({ setupVisible, onComplete }: { setupVisible: boolean; onComplete: () => Promise<void> }) {
-  const [setup, setSetup] = useState(false)
-  const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [email, setEmail] = useState('')
-  const workspaceIdentity = useWorkspaceProfile()
-  const [name, setName] = useState('Admin')
-  const [password, setPassword] = useState('')
-  const [bootstrap, setBootstrap] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const generatePassword = () => {
-    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*+-_'
-    const cutoff = 256 - (256 % alphabet.length)
-    let generated = ''
-    while (generated.length < 32) {
-      const bytes = new Uint8Array(48)
-      crypto.getRandomValues(bytes)
-      for (const byte of bytes) if (byte < cutoff && generated.length < 32) generated += alphabet[byte % alphabet.length]
-    }
-    setPassword(generated)
-    setShowPassword(true)
-  }
-  const submitLogin = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setBusy(true); setError('')
-    try { const result = await authClient.signIn.email({ email, password }); if (result.error) throw new Error('Email atau password tidak cocok.'); await onComplete() }
-    catch { setError('Email atau password tidak cocok. Periksa kembali kredensial admin.') }
-    finally { setBusy(false) }
-  }
-  const submitSetup = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setBusy(true); setError('')
-    try {
-      const response = await fetch('/api/auth/sign-up/email', { method: 'POST', headers: { 'content-type': 'application/json', 'x-admin-bootstrap': bootstrap }, body: JSON.stringify({ name, email, password }) })
-      const result = await response.json() as { message?: string; user?: unknown }
-      if (!response.ok || !result.user) throw new Error(result.message || 'Setup ditolak. Periksa email admin dan token setup.')
-      setSetup(false); await onComplete()
-    } catch (cause) { setError((cause as Error).message || 'Setup admin gagal.') }
-    finally { setBusy(false) }
-  }
-  return <main className="auth-page"><section className="auth-art"><div className="brand-logo-panel"><WorkspaceLogo className="auth-art-logo" /></div><div><div className="eyebrow">Creative work, in good order.</div><h2>Satu ruang kerja untuk semua sisi agensi.</h2><p className="quote">Rencanakan konten, jaga hubungan klien, dan pahami kondisi bisnis dari satu workspace yang privat.</p></div><span className="brand-sub" style={{ color: 'var(--muted)' }}>Social media & agency workspace</span></section><section className="auth-form-wrap"><div className="auth-box"><WorkspaceLogo className="auth-logo" /><strong className="auth-workspace-name">{workspaceIdentity.name}</strong><div className="eyebrow">{setup ? 'Initial secure setup' : 'Admin workspace'}</div><h1>{setup ? 'Buat akun admin' : 'Selamat datang kembali'}</h1><p>{setup ? 'Akun pertama menjadi satu-satunya admin. Setup ditutup otomatis setelah akun dibuat.' : 'Masuk dengan kredensial admin untuk membuka workspace.'}</p>
-      <form onSubmit={setup ? submitSetup : submitLogin}>{setup && <><div className="field"><label htmlFor="auth-name">Nama admin</label><input id="auth-name" className="input" value={name} onChange={(event) => setName(event.target.value)} required maxLength={80} /></div><div className="field"><label htmlFor="auth-email">Email admin</label><input id="auth-email" className="input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /><span className="field-hint">Gunakan email yang sama dengan secret ADMIN_EMAIL.</span></div><div className="field"><label htmlFor="auth-bootstrap">Token setup satu kali</label><input id="auth-bootstrap" className="input" type="password" value={bootstrap} onChange={(event) => setBootstrap(event.target.value)} autoComplete="off" required minLength={32} /><span className="field-hint">Token harus cocok dengan secret ADMIN_BOOTSTRAP_TOKEN.</span></div></>}{!setup && <div className="field"><label htmlFor="auth-email">Email admin</label><input id="auth-email" className="input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" required /></div>}<div className="field"><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}><label htmlFor="auth-password">Password {setup && <span className="muted">· minimal 8 karakter</span>}</label>{setup && <div className="page-actions"><button className="button" type="button" style={{ padding: '6px 8px', fontSize: 'var(--text-xs)' }} onClick={generatePassword}>Buat password acak</button>{password && <button className="button" type="button" style={{ padding: '6px 8px', fontSize: 'var(--text-xs)' }} onClick={() => void navigator.clipboard.writeText(password)}>Salin</button>}</div>}</div><div style={{ position: 'relative' }}><input id="auth-password" className="input" style={{ paddingRight: 62 }} type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={setup ? 'new-password' : 'current-password'} minLength={setup ? 8 : undefined} maxLength={128} required /><button type="button" className="icon-button" style={{ position: 'absolute', right: 6, top: 4, fontSize: 'var(--text-xs)', width: 48 }} onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Sembunyi' : 'Lihat'}</button></div>{setup && <span className="field-hint">Password acak berisi 32 karakter. Simpan di password manager sebelum menyelesaikan setup.</span>}</div>{error && <div className="error" role="alert">{error}</div>}<button className="button primary" type="submit" disabled={busy}>{busy ? 'Memproses…' : setup ? 'Buat akun admin' : 'Masuk ke workspace'} <ArrowRight size={15} /></button></form>
-      {setupVisible && <button className="button ghost" style={{ width: '100%', marginTop: 12 }} onClick={() => { setSetup(!setup); setError('') }}>{setup ? 'Kembali ke halaman login' : 'Setup admin pertama kali'}</button>}
-    </div></section></main>
 }
 
 function PasswordDialog({ open, onClose, onSuccess }: { open: boolean; onClose: () => void; onSuccess: () => void }) {

@@ -100,7 +100,7 @@ Pengguna yang sudah memiliki klien bisa langsung mulai dari pembuatan brand. Inv
 3. Pilih **Masuk ke workspace**.
 4. Periksa bulan yang sedang ditampilkan di Beranda.
 
-Jika aplikasi belum memiliki admin, pengelola perlu menyelesaikan setup pertama. Formulirnya meminta nama, email admin yang telah dikonfigurasi, token setup, dan kata sandi minimal delapan karakter. Pembuatan akun berikutnya ditutup setelah admin pertama dibuat.
+Jika aplikasi belum memiliki admin, pengelola instalasi memberikan tautan aktivasi pribadi yang berlaku selama 30 menit. Buka tautan tersebut, isi nama dan kata sandi minimal delapan karakter, lalu pilih **Aktifkan workspace**. Email pemilik sudah terisi dan tidak dapat diganti. Akun langsung masuk ke workspace setelah aktivasi berhasil. Jika tautan kedaluwarsa atau hilang, minta tautan pengganti; tautan lama otomatis tidak berlaku. Pembuatan akun berikutnya ditutup setelah admin pertama dibuat.
 
 ### Langkah 2 — Sesuaikan identitas agensi
 
@@ -343,7 +343,7 @@ Ajakan penutup dapat diganti menjadi “Hubungi kami untuk demo” setelah pemil
 
 Gunakan alat perekam layar atau ambil gambar tiap tahap, lalu susun menjadi stop motion.
 
-Jangan tampilkan kata sandi, token setup, nomor rekening asli, atau tautan tinjauan klien sungguhan. Data contoh bawaan hanya bisa dimuat pada ruang kerja kosong; gunakan contoh fiktif yang sudah diperiksa untuk materi publik.
+Jangan tampilkan kata sandi, tautan aktivasi, nomor rekening asli, atau tautan tinjauan klien sungguhan. Data contoh bawaan hanya bisa dimuat pada ruang kerja kosong; gunakan contoh fiktif yang sudah diperiksa untuk materi publik.
 
 ## 7. Catatan sumber untuk pemilik proyek
 

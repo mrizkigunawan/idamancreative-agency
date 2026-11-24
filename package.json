@@ -10,6 +10,8 @@
     "generate-routes": "vite build",
     "build": "vite build",
     "test:branding": "node --experimental-strip-types --test tests/workspace-branding.test.mjs tests/workspace-theme.test.mjs && python -m unittest discover -s tests -p test_*.py",
+    "test:activation": "node --experimental-strip-types --test tests/admin-activation.test.mjs",
+    "setup:link": "node scripts/setup-link.mjs",
     "preview": "vite preview",
     "deploy": "pnpm run build && wrangler deploy --config wrangler.production.jsonc",
     "cf-typegen": "wrangler types --include-runtime false --include-main-module false",
