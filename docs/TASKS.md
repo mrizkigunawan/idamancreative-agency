@@ -1,6 +1,6 @@
 # Project change backlog
 
-Status: tasks 1 and 2 are authorized for implementation. Tasks 3–5 remain pending; visual/theme work stays deferred.
+Status: tasks 1–3 are implemented. Tasks 4–5 remain pending; visual/theme work stays deferred.
 
 ## 1. Remove Asisten Konten
 
@@ -21,10 +21,14 @@ Validation: TypeScript and production build passed. Source review confirmed dire
 
 ## 3. Move profile and logout into a profile dropdown
 
-- [ ] Replace the standalone top-right **Keluar** button with a profile button.
-- [ ] Show the current profile information in the profile dropdown, moving it from the left sidebar.
-- [ ] Place **Keluar** inside the dropdown and retain access to existing profile actions.
-- [ ] Verify the dropdown, profile information, and logout work on desktop and mobile, including keyboard interaction.
+- [x] Replace the standalone top-right **Keluar** button with a profile button.
+- [x] Show the current profile information in the profile dropdown, moving it from the left sidebar.
+- [x] Place **Keluar** inside the dropdown and retain access to existing profile actions.
+- [x] Keep only **Edit profil** and **Keluar** as dropdown actions; move profile editing to a full workspace page, with branding and password settings on that page.
+- [x] Standardize profile-page labels, compact field spacing, matching rounded image previews, small image-action buttons with prefix icons, and a danger-style photo removal action.
+- [x] Verify the dropdown, profile information, and logout callbacks on desktop and mobile, including keyboard interaction.
+
+Validation: TypeScript and production build passed. Temporary browser previews checked the two dropdown actions, full-page form, successful and failed saves with mock requests, updated profile details, password access from the page, return navigation, desktop/mobile layout, and the existing keyboard and dismissal behavior. The profile page uses `/?page=profile` so it can be refreshed and revisited. The application requires login; authenticated profile saving and session logout were not tested end to end.
 
 ## 4. Adjust colors, typography, and theme — deferred
 

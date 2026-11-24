@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { addMonths, format, getDaysInMonth, getDay, parseISO, startOfMonth, subMonths } from 'date-fns'
 import { id } from 'date-fns/locale'
-import { ArrowDownLeft, ArrowRight, ArrowUpRight, Banknote, BriefcaseBusiness, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, FileDown, FilePlus2, FileText, Handshake, KeyRound, LayoutDashboard, Link2, LogOut, Menu, MessageCircle, Package, PanelsTopLeft, Pencil, Plus, Power, Search, Sparkles, Trash2, TrendingUp, Upload, Wallet, X } from 'lucide-react'
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, Banknote, BriefcaseBusiness, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, FileDown, FilePlus2, FileText, Handshake, LayoutDashboard, Link2, Menu, MessageCircle, Package, PanelsTopLeft, Pencil, Plus, Power, Search, Sparkles, Trash2, TrendingUp, Upload, Wallet, X } from 'lucide-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
@@ -14,15 +14,18 @@ import { getImportantDates } from '#/lib/important-dates'
 import { MonthlyReport } from '#/components/monthly-report'
 import { BrandNotesPanel } from '#/components/brand-notes'
 import { InventoryView } from '#/components/inventory-view'
+import { ProfileDropdown } from '#/components/profile-dropdown'
+import { ProfilePage } from '#/components/profile-page'
 
 import { ClientDocumentsPanel } from '#/components/client-documents'
 import { analyzeInstagramCover, getAuthState, getPageData, moveProspectDocuments, removeRecord, saveBrandSocialProfile, saveInstagramFeedOrder, saveRecord, seedDemoData, setBrandActiveStatus } from '#/lib/server'
-import { ContentPlanShareButton, InstagramFeedPlanner, InstagramProfilePlanner, ProfileImageUpload } from '#/components/content-planner'
+import { ContentPlanShareButton, InstagramFeedPlanner, InstagramProfilePlanner } from '#/components/content-planner'
 import type { brandNotes, brandSocialProfiles, brands, contents, visits, prospects, transactions, socialReports, inventoryItems } from '#/lib/schema'
 import { defaultWorkspaceProfile } from '#/lib/workspace-profile'
 import type { WorkspaceProfileDetails } from '#/lib/workspace-profile'
 
 export const Route = createFileRoute('/')({
+  validateSearch: (search: Record<string, unknown>): { page?: 'profile' } => search.page === 'profile' ? { page: 'profile' } : {},
   loader: () => getAuthState(),
   component: Workspace,
 })
@@ -68,13 +71,17 @@ function Workspace() {
   const [data, setData] = useState<Data>({ brands: [], contents: [], visits: [], brandNotes: [], prospects: [], transactions: [], reports: [], inventory: [], socialProfiles: [] })
   const [workspaceProfile, setWorkspaceProfile] = useState<WorkspaceProfileDetails>(defaultWorkspaceProfile)
   const [loading, setLoading] = useState(Boolean(authState.user))
-  const [view, setView] = useState('dashboard')
+  const { page } = Route.useSearch()
+  const [workspaceView, setWorkspaceView] = useState('dashboard')
+  const view = page === 'profile' ? 'profile' : workspaceView
+  const setView = (nextView: string) => {
+    if (nextView !== 'profile') setWorkspaceView(nextView)
+    if (nextView === 'profile' || page === 'profile') void router.navigate({ to: '/', search: nextView === 'profile' ? { page: 'profile' } : {} })
+  }
   const [mobileOpen, setMobileOpen] = useState(false)
   const [month, setMonth] = useState(monthNow())
   const [modal, setModal] = useState<ModalState>(null)
   const [passwordOpen, setPasswordOpen] = useState(false)
-  const [profileOpen, setProfileOpen] = useState(false)
-  const [focusLogoEditor, setFocusLogoEditor] = useState(false)
   const [selectedBrand, setSelectedBrand] = useState<string | null>(null)
   const [brandTab, setBrandTab] = useState('overview')
   const [search, setSearch] = useState('')
@@ -167,7 +174,7 @@ function Workspace() {
 
     setModal({ kind, item: defaults, ...(performanceOnly ? { performanceOnly: true } : {}) })
   }
-  const heading = navItems.find((item) => item.id === view)?.label ?? 'Beranda'
+  const heading = view === 'profile' ? 'Profil pribadi' : navItems.find((item) => item.id === view)?.label ?? 'Beranda'
   const navEnglish: Record<string, string> = { Beranda: 'Dashboard', 'Kalender & Visit': 'Calendar & Visits', 'Brand & SOW': 'Brands & SOW', 'Content Planner': 'Content Planner', 'Pitching CRM': 'Prospect Pipeline', Keuangan: 'Finance', Inventaris: 'Inventory' }
   const currentMonthLabel = monthText(month, language)
   const activeBrands = data.brands.filter((brand) => brand.isActive)
@@ -208,21 +215,38 @@ function Workspace() {
     return (a.target ? a.pct : 101) - (b.target ? b.pct : 101) || b.remaining - a.remaining || a.brand.name.localeCompare(b.brand.name, 'id')
   })
 
+  const profileDropdown = <ProfileDropdown user={user}
+    onEditProfile={() => { setMobileOpen(false); setView('profile') }}
+    onSignOut={async () => {
+      const result = await authClient.signOut()
+      if (result.error) throw new Error(result.error.message || 'Gagal keluar. Coba lagi.')
+      setUser(null)
+      setToast('')
+    }} />
+
   return <>
     <header className="mobile-header">
       <div className="brandmark"><img className="brand-logo" src="/api/workspace-logo" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/brand/idaman-creative-logo.png' }} alt={workspaceProfile.name} /><div className="brand-sub">{workspaceProfile.tagline || 'Social Media Workspace'}</div></div>
-      <button className="icon-button" aria-label="Buka menu" onClick={() => setMobileOpen(!mobileOpen)}><Menu size={20} /></button>
+      <div className="mobile-account-actions">{profileDropdown}<button className="icon-button" aria-label="Buka menu" onClick={() => setMobileOpen(!mobileOpen)}><Menu size={20} /></button></div>
     </header>
     {mobileOpen && <div className="mobile-shade" onClick={() => setMobileOpen(false)} />}
     <div className="shell">
       <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
         <div className="brandmark"><img className="brand-logo" src="/api/workspace-logo" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = '/brand/idaman-creative-logo.png' }} alt={workspaceProfile.name} /><div className="brand-sub">{workspaceProfile.tagline}</div></div>
-        <button type="button" className="sidebar-profile-button" onClick={() => { setFocusLogoEditor(false); setProfileOpen(true) }}><span className="sidebar-profile-avatar">{user.image ? <img src={user.image} alt="" /> : (user.name?.slice(0, 1).toUpperCase() || 'A')}</span><span><strong>{user.name}</strong><small>{language === 'en' ? 'Personal profile' : 'Profil pribadi'}</small></span><Pencil size={14} /></button>
         <nav className="nav" aria-label={language === 'en' ? 'Main navigation' : 'Navigasi utama'}>{navItems.map(({ id, label, icon: Icon }) => <button key={id} className={view === id ? 'active' : ''} onClick={() => { setView(id); setSelectedBrand(null); setMobileOpen(false) }}><Icon size={17} /><span>{language === 'en' ? navEnglish[label] : label}</span></button>)}</nav>
         <div className="sidebar-bottom"><div className="period-card"><strong>{language === 'en' ? 'Private workspace' : 'Workspace privat'}</strong><p>{language === 'en' ? 'Data is securely stored in the database. Admin access only.' : 'Data tersimpan aman di database. Akses hanya untuk admin.'}</p></div></div>
       </aside>
       <main className="main">
-        <div className="topbar"><span className="muted" style={{ fontSize: 12 }}>{workspaceProfile.name} <span style={{ color: '#c5bfb4' }}>/</span> {language === 'en' ? navEnglish[heading] ?? heading : heading}</span><div className="top-actions"><button className="button" title="Ubah logo yang digunakan di seluruh workspace" onClick={() => { setFocusLogoEditor(true); setProfileOpen(true) }}><Pencil size={14} /> Edit logo</button><button className="button ghost" onClick={async () => { await authClient.signOut(); setUser(null); setToast('') }}><LogOut size={15} /> {language === 'en' ? 'Sign out' : 'Keluar'}</button></div></div>
+        <div className="topbar"><span className="muted" style={{ fontSize: 12 }}>{workspaceProfile.name} <span style={{ color: '#c5bfb4' }}>/</span> {language === 'en' ? navEnglish[heading] ?? heading : heading}</span><div className="top-actions">{profileDropdown}</div></div>
+
+        {view === 'profile' && <ProfilePage user={user} workspaceProfile={workspaceProfile}
+          onUpdateUser={async (name, image) => {
+            const result = await authClient.updateUser({ name, image })
+            if (result.error) throw new Error(result.error.message || 'Profil gagal disimpan.')
+          }}
+          onWorkspaceProfileSaved={setWorkspaceProfile}
+          onSaved={(name, image) => { setUser((current) => current ? { ...current, name, image } : current); notify('Profil berhasil diperbarui') }}
+          onBack={() => setView(workspaceView)} onChangePassword={() => setPasswordOpen(true)} />}
 
         {view === 'dashboard' && <>
           <div className="pagehead dashboard-pagehead"><div><div className="eyebrow">{workspaceProfile.name} Workspace</div><h1>{language === 'en' ? 'Hello, Winda 👋' : 'Halo, Winda 👋'}</h1><p>{language === 'en' ? `Track content, visits, and cash flow for ${activeBrands.length} active brands.` : `Pantau konten, jadwal visit, dan arus kas untuk ${activeBrands.length} brand aktif.`}</p></div><div className="page-actions"><div className="month-switch"><button aria-label={language === 'en' ? 'Previous month' : 'Bulan sebelumnya'} onClick={() => moveMonth(-1)}><ChevronLeft size={17} /></button><span className="badge" style={{ minWidth: 110, justifyContent: 'center' }}>{currentMonthLabel}</span><button aria-label={language === 'en' ? 'Next month' : 'Bulan berikutnya'} onClick={() => moveMonth(1)}><ChevronRight size={17} /></button></div><button className="button" onClick={() => addRecord('content')}><Plus size={15} /> {language === 'en' ? 'New content' : 'Konten Baru'}</button><button className="button primary" onClick={() => addRecord('brand')}><Plus size={15} /> {language === 'en' ? 'New brand' : 'Brand Baru'}</button></div></div>
@@ -259,7 +283,6 @@ function Workspace() {
       </main>
     </div>
     <RecordDialog key={modal ? `${modal.kind}-${String(modal.item?.id ?? 'new')}-${modal.performanceOnly ? 'performance' : 'full'}` : 'closed'} modal={modal} data={data} onClose={() => { setModal(null); setPendingProspectId(null) }} onSave={save} onDelete={remove} />
-    <PersonalProfileDialog open={profileOpen} focusLogoEditor={focusLogoEditor} workspaceProfile={workspaceProfile} onWorkspaceProfileSaved={setWorkspaceProfile} user={{ name: user.name, email: user.email, image: user.image }} onClose={() => { setProfileOpen(false); setFocusLogoEditor(false) }} onChangePassword={() => { setProfileOpen(false); setPasswordOpen(true) }} onSaved={(name, image) => { setUser((current) => current ? { ...current, name, image } : current); setProfileOpen(false); notify('Profil pribadi berhasil diperbarui') }} />
     <PasswordDialog open={passwordOpen} onClose={() => setPasswordOpen(false)} onSuccess={() => { setPasswordOpen(false); notify('Password berhasil diganti') }} />
     {toast && <div className="toast" role="status">{toast}</div>}
   </>
@@ -838,50 +861,6 @@ function AuthView({ setupVisible, onComplete }: { setupVisible: boolean; onCompl
       <form onSubmit={setup ? submitSetup : submitLogin}>{setup && <><div className="field"><label>Nama admin</label><input className="input" value={name} onChange={(event) => setName(event.target.value)} required maxLength={80} /></div><div className="field"><label>Email admin</label><input className="input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required /><span className="field-hint">Gunakan email yang sama dengan secret ADMIN_EMAIL.</span></div><div className="field"><label>Token setup satu kali</label><input className="input" type="password" value={bootstrap} onChange={(event) => setBootstrap(event.target.value)} autoComplete="off" required minLength={32} /><span className="field-hint">Token harus cocok dengan secret ADMIN_BOOTSTRAP_TOKEN.</span></div></>}{!setup && <div className="field"><label>Email admin</label><input className="input" type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="username" required /></div>}<div className="field"><div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8 }}><label>Password {setup && <span className="muted">· minimal 8 karakter</span>}</label>{setup && <div className="page-actions"><button className="button" type="button" style={{ padding: '6px 8px', fontSize: 10 }} onClick={generatePassword}>Buat password acak</button>{password && <button className="button" type="button" style={{ padding: '6px 8px', fontSize: 10 }} onClick={() => void navigator.clipboard.writeText(password)}>Salin</button>}</div>}</div><div style={{ position: 'relative' }}><input className="input" style={{ paddingRight: 62 }} type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} autoComplete={setup ? 'new-password' : 'current-password'} minLength={setup ? 8 : undefined} maxLength={128} required /><button type="button" className="icon-button" style={{ position: 'absolute', right: 6, top: 4, fontSize: 10, width: 48 }} onClick={() => setShowPassword(!showPassword)}>{showPassword ? 'Sembunyi' : 'Lihat'}</button></div>{setup && <span className="field-hint">Password acak berisi 32 karakter. Simpan di password manager sebelum menyelesaikan setup.</span>}</div>{error && <div className="error" role="alert">{error}</div>}<button className="button primary" type="submit" disabled={busy}>{busy ? 'Memproses…' : setup ? 'Buat akun admin' : 'Masuk ke workspace'} <ArrowRight size={15} /></button></form>
       {setupVisible && <button className="button ghost" style={{ width: '100%', marginTop: 12 }} onClick={() => { setSetup(!setup); setError('') }}>{setup ? 'Kembali ke halaman login' : 'Setup admin pertama kali'}</button>}
     </div></section></main>
-}
-
-function PersonalProfileDialog({ open, user, focusLogoEditor = false, workspaceProfile, onWorkspaceProfileSaved, onClose, onChangePassword, onSaved }: { open: boolean; user: { name: string; email: string; image?: string | null }; focusLogoEditor?: boolean; workspaceProfile: WorkspaceProfileDetails; onWorkspaceProfileSaved: (profile: WorkspaceProfileDetails) => void; onClose: () => void; onChangePassword: () => void; onSaved: (name: string, image: string | null) => void }) {
-  const language = useAppLanguage()
-  const [name, setName] = useState(user.name)
-  const [image, setImage] = useState(user.image || '')
-  const [error, setError] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [photoBusy, setPhotoBusy] = useState(false)
-  const [workspaceLogo, setWorkspaceLogo] = useState('')
-  const [workspaceLogoChanged, setWorkspaceLogoChanged] = useState(false)
-  const [workspaceLogoReset, setWorkspaceLogoReset] = useState(false)
-  const [businessProfile, setBusinessProfile] = useState<WorkspaceProfileDetails>(workspaceProfile)
-  useEffect(() => { if (open) { setName(user.name); setImage(user.image || ''); setError('') } }, [open, user.name, user.image])
-  useEffect(() => {
-    if (!open) return
-    setBusinessProfile(workspaceProfile); setWorkspaceLogo(''); setWorkspaceLogoChanged(false); setWorkspaceLogoReset(false)
-    fetch('/api/workspace-profile', { cache: 'no-store' }).then(async (response) => { if (response.ok) setBusinessProfile({ ...defaultWorkspaceProfile, ...await response.json() as WorkspaceProfileDetails }) }).catch(() => undefined)
-    fetch('/api/workspace-logo', { cache: 'no-store' }).then(async (response) => { if (!response.ok) { setWorkspaceLogo('/brand/idaman-creative-logo.png'); return }; const reader = new FileReader(); reader.onload = () => setWorkspaceLogo(typeof reader.result === 'string' ? reader.result : '/brand/idaman-creative-logo.png'); reader.readAsDataURL(await response.blob()) }).catch(() => setWorkspaceLogo('/brand/idaman-creative-logo.png'))
-  }, [open])
-  useEffect(() => { if (open && focusLogoEditor) window.setTimeout(() => document.getElementById('workspace-logo-editor')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 120) }, [open, focusLogoEditor])
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); setBusy(true); setError('')
-    try {
-      const result = await authClient.updateUser({ name: name.trim(), image: image.trim() || null })
-      if (result.error) throw new Error(result.error.message || 'Profil gagal disimpan.')
-      const profileResponse = await fetch('/api/workspace-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: businessProfile.name }) })
-      const profileResult = await profileResponse.json() as WorkspaceProfileDetails & { error?: string }
-      if (!profileResponse.ok) throw new Error(profileResult.error || 'Nama brand gagal disimpan.')
-      if (workspaceLogoReset) {
-        const response = await fetch('/api/workspace-logo', { method: 'DELETE' })
-        if (!response.ok) throw new Error(((await response.json()) as { error?: string }).error || 'Logo default gagal dipulihkan.')
-      } else if (workspaceLogoChanged && workspaceLogo) {
-        const blob = await (await fetch(workspaceLogo)).blob()
-        const form = new FormData(); form.set('file', new File([blob], 'workspace-logo.jpg', { type: blob.type || 'image/jpeg' }))
-        const response = await fetch('/api/workspace-logo', { method: 'POST', body: form })
-        if (!response.ok) throw new Error(((await response.json()) as { error?: string }).error || 'Logo workspace gagal disimpan.')
-      }
-      onWorkspaceProfileSaved({ ...defaultWorkspaceProfile, ...profileResult })
-      onSaved(name.trim(), image.trim() || null)
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Profil gagal disimpan.') }
-    finally { setBusy(false) }
-  }
-  return <Dialog.Root open={open} onOpenChange={(value) => !value && onClose()}><Dialog.Portal><Dialog.Overlay className="modal-backdrop" /><Dialog.Content className="modal personal-profile-dialog" aria-describedby="personal-profile-description"><div className="modal-head"><div><Dialog.Title asChild><h3>{uiText(language, 'Profil pribadi')}</h3></Dialog.Title><Dialog.Description id="personal-profile-description" className="muted" style={{ fontSize: 11, margin: 0 }}>{uiText(language, 'Identitas akun admin.')}</Dialog.Description></div><Dialog.Close asChild><button className="icon-button" aria-label={uiText(language, 'Tutup')}><X size={18} /></button></Dialog.Close></div><form className="modal-body" onSubmit={submit}><div className="personal-photo-field"><ProfileImageUpload key={`${open}-${user.image || 'empty'}`} label={uiText(language, 'Foto profil')} value={image} shape="circle" fit="cover" onChange={setImage} onBusyChange={setPhotoBusy} />{image && <button type="button" className="button personal-photo-remove" onClick={() => setImage('')}>{uiText(language, 'Hapus foto')}</button>}</div><div className="personal-profile-fields"><label className="field"><span>{uiText(language, 'Nama tampilan')}</span><input className="input" value={name} onChange={(event) => setName(event.target.value)} maxLength={100} required /></label><label className="field"><span>{uiText(language, 'Email akun')}</span><input className="input" value={user.email} readOnly disabled /></label></div><section className="workspace-logo-editor"><div><strong>Nama brand</strong><small>Nama ini digunakan pada dashboard, invoice, dokumen, laporan, dan footer workspace.</small></div><label className="field"><span>Nama brand</span><input className="input" maxLength={120} value={businessProfile.name} onChange={(event) => setBusinessProfile({ ...businessProfile, name: event.target.value })} required /></label></section><section id="workspace-logo-editor" className="workspace-logo-editor"><div><strong>Logo workspace</strong><small>Pratinjau logo yang tampil di dashboard, invoice, dokumen, dan laporan. Seret gambar untuk mengatur posisi.</small></div><div className="workspace-brand-upload"><ProfileImageUpload key={`${open}-workspace-logo`} label="Logo" value={workspaceLogoReset ? '/brand/idaman-creative-logo.png' : workspaceLogo} fit="contain" onChange={(value) => { setWorkspaceLogo(value); setWorkspaceLogoChanged(true); setWorkspaceLogoReset(false) }} onBusyChange={setPhotoBusy} /></div><div className="actions"><button type="button" className="button" onClick={() => { setWorkspaceLogoReset(true); setWorkspaceLogoChanged(false); setWorkspaceLogo('/brand/idaman-creative-logo.png') }}>Gunakan logo default</button></div>{workspaceLogoReset && <small className="field-hint">Logo default akan diterapkan saat kamu menyimpan semua perubahan.</small>}</section>{error && <div className="error" role="alert">{error}</div>}<div className="personal-password-row"><span><strong>{uiText(language, 'Keamanan')}</strong><small>{uiText(language, 'Ubah password akun admin.')}</small></span><button type="button" className="button" onClick={onChangePassword}><KeyRound size={14} /> {uiText(language, 'Ganti password')}</button></div><div className="modal-foot"><button type="button" className="button" onClick={onClose}>{uiText(language, 'Batal')}</button><button className="button primary" type="submit" disabled={busy || photoBusy}>{busy ? (language === 'en' ? 'Saving…' : 'Menyimpan…') : photoBusy ? (language === 'en' ? 'Processing photo…' : 'Memproses foto…') : 'Simpan semua perubahan'}</button></div></form></Dialog.Content></Dialog.Portal></Dialog.Root>
 }
 
 function PasswordDialog({ open, onClose, onSuccess }: { open: boolean; onClose: () => void; onSuccess: () => void }) {

@@ -104,10 +104,12 @@ Jika aplikasi belum memiliki admin, pengelola perlu menyelesaikan setup pertama.
 
 ### Langkah 2 — Sesuaikan identitas agensi
 
-1. Pilih profil pribadi di menu samping.
+1. Buka tombol profil di kanan atas, lalu pilih **Edit profil** untuk membuka halaman profil. Dropdown menampilkan nama dan email akun dengan dua aksi: **Edit profil** dan **Keluar**. Pada ponsel, tombol profil berada di samping tombol menu.
 2. Isi nama tampilan dan foto profil jika diperlukan.
 3. Sesuaikan nama brand ruang kerja dan logo agensi.
 4. Pilih **Simpan semua perubahan**.
+
+Halaman tetap terbuka setelah perubahan disimpan. Gunakan **Kembali ke workspace** untuk kembali bekerja. Penggantian kata sandi tersedia di bagian **Keamanan akun** pada halaman profil.
 
 Nama brand ruang kerja adalah identitas agensi. Data klien dibuat melalui menu Brand & SOW.
 
