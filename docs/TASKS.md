@@ -11,11 +11,13 @@ Status: tasks 1 and 2 are authorized for implementation. Tasks 3–5 remain pend
 
 ## 2. Remove mode rekam
 
-Current purpose: hides real brand names behind template names during screen recording.
+Completed: real brand and prospect names, contact details, and normal actions are always available.
 
-- [ ] Remove the recording-mode control and its brand-censoring behavior.
-- [ ] Remove its dedicated components, state, settings, and references.
-- [ ] Verify normal brand names display consistently after removal.
+- [x] Remove the recording-mode control and its brand-censoring behavior.
+- [x] Remove its dedicated components, state, settings, and references.
+- [x] Verify normal brand names display consistently after removal.
+
+Validation: TypeScript and production build passed. Source review confirmed direct names and removal of recording restrictions across brands, notes, calendar, prospects, and finance. Browser interaction was not tested.
 
 ## 3. Move profile and logout into a profile dropdown
 

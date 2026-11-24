@@ -81,7 +81,6 @@ Fitur lain yang tersedia:
 - umpan balik AI atas cover Instagram yang sudah diunggah;
 - penggantian nama dan logo ruang kerja untuk tampilan serta dokumen keluaran;
 - pengubahan profil pribadi dan kata sandi admin;
-- Mode Rekam untuk menyamarkan sebagian informasi saat presentasi;
 - pemuatan data contoh ketika seluruh tabel data operasional masih kosong.
 
 Tautan Canva dan akun sosial membuka layanan di luar aplikasi. Menyimpan tautan belum berarti aplikasi terhubung ke akun tersebut.
@@ -335,11 +334,10 @@ Ajakan penutup dapat diganti menjadi “Hubungi kami untuk demo” setelah pemil
 4. Siapkan satu jadwal visit dan satu komentar klien contoh.
 5. Lengkapi angka laporan dan coba pratinjau PDF sebelum merekam.
 6. Jika menampilkan AI, coba layanannya lebih dahulu. Rekam jawaban yang sudah ditinjau faktanya.
-7. Gunakan Mode Rekam untuk cuplikan tampilan umum jika diperlukan.
-8. Untuk menunjukkan pengisian formulir, gunakan data demo. Mode Rekam membatasi sejumlah tindakan.
-9. Periksa hasil rekaman sebelum dibagikan. Nominal, gambar, atau rincian lain dapat tetap terlihat meskipun Mode Rekam aktif.
+7. Gunakan data demo untuk menunjukkan pengisian formulir.
+8. Periksa hasil rekaman sebelum dibagikan, termasuk nominal, gambar, dan rincian klien.
 
-Mode Rekam adalah pengaturan penyamaran tampilan. Tombol ini tidak merekam video. Gunakan alat perekam layar atau ambil gambar tiap tahap, lalu susun menjadi stop motion.
+Gunakan alat perekam layar atau ambil gambar tiap tahap, lalu susun menjadi stop motion.
 
 Jangan tampilkan kata sandi, token setup, nomor rekening asli, atau tautan tinjauan klien sungguhan. Data contoh bawaan hanya bisa dimuat pada ruang kerja kosong; gunakan contoh fiktif yang sudah diperiksa untuk materi publik.
 
@@ -349,7 +347,7 @@ Bagian ini membantu memeriksa ulang penjelasan jika aplikasi berubah:
 
 | Sumber | Bagian yang diperiksa |
 | --- | --- |
-| [Tampilan utama dan formulir](src/routes/index.tsx) | Navigasi, Beranda, brand, kalender, prospek, keuangan, AI, formulir, profil, dan Mode Rekam. |
+| [Tampilan utama dan formulir](src/routes/index.tsx) | Navigasi, Beranda, brand, kalender, prospek, keuangan, AI, formulir, profil. |
 | [Perencana konten](src/components/content-planner.tsx) | Susunan feed, perubahan tanggal, profil Instagram, serta pengelolaan tautan tinjauan. |
 | [Halaman berbagi content plan](src/routes/api/content-plan-share.ts) | Isi yang dilihat klien, komentar, masa berlaku, dan pencabutan tautan. |
 | [Laporan bulanan](src/components/monthly-report.tsx) | Input metrik, perhitungan, lampiran, pratinjau cetak, dan syarat finalisasi. |
