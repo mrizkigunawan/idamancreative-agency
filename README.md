@@ -41,6 +41,8 @@ Content analysis uses the Cloudflare Workers AI binding configured in `wrangler.
 
 4. Open `http://localhost:3000`, choose **Setup admin pertama kali**, enter the exact `ADMIN_EMAIL` and `ADMIN_BOOTSTRAP_TOKEN`, and choose a unique password with at least 8 characters. The database enforces a single account, and registration is denied after it is created.
 
+Use the exact origin configured in `BETTER_AUTH_URL`, including the protocol, hostname, and port. `http://localhost:3000` and `http://127.0.0.1:3000` are different origins; opening one while configuring the other causes Better Auth to reject signup with `Invalid origin`. Restart `pnpm dev` after changing `.dev.vars`. `Using secrets defined in .dev.vars` is an informational message, not an error.
+
 Keep `ADMIN_BOOTSTRAP_TOKEN` until the admin account is created. After setup, remove it from `.dev.vars` and the Cloudflare Worker secrets. If the first setup token is lost before an admin is created, set a new one. Do not put passwords or tokens in source control.
 
 ## Cloudflare deployment

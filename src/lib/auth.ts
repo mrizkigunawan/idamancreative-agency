@@ -24,7 +24,7 @@ export const auth = betterAuth({
   },
   rateLimit: { window: 60, max: 5, storage: 'database' },
   session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
-  advanced: { useSecureCookies: true, crossSubDomainCookies: { enabled: false } },
+  advanced: { crossSubDomainCookies: { enabled: false } },
   databaseHooks: {
     user: {
       create: {
