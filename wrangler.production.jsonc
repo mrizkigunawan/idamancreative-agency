@@ -11,12 +11,12 @@
   },
   "ai": { "binding": "AI" },
   "d1_databases": [
-    {
-    "binding": "DB",
-    "database_name": "idaman-creative-ops",
-    "database_id": "f9e381fd-5933-45e8-b1fa-4f4cae50160b",
-    "migrations_dir": "migrations"
-    },
+    // {
+    // "binding": "DB",
+    // "database_name": "idaman-creative-ops",
+    // "database_id": "f9e381fd-5933-45e8-b1fa-4f4cae50160b",
+    // "migrations_dir": "migrations"
+    // },
     {
 			"binding": "idaman_creative_ops",
 			"database_name": "idaman-creative-ops",
