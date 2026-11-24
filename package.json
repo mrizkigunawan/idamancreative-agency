@@ -1,6 +1,7 @@
 {
   "name": "idaman-creative",
   "private": true,
+  "packageManager": "pnpm@12.23.0",
   "type": "module",
   "imports": {
     "#/*": "./src/*"

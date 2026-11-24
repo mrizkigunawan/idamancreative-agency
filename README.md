@@ -31,7 +31,9 @@ Shared type scales, controls, spacing, and visual foundations live in `src/style
 
 ## Local development
 
-Requirements: Node.js 20 or newer and pnpm 10 or newer.
+Use Node.js 24 and the project's pinned pnpm `12.23.0` (via Corepack). `packageManager` in `package.json` pins the same pnpm version for local work and Cloudflare Workers Builds.
+
+The lockfile includes pnpm 12's separate bootstrap document. Older pnpm versions report `ERR_PNPM_BROKEN_LOCKFILE` with “expected a single document” when reading it. Keep the lockfile intact and use the pinned version; confirm it with `pnpm --version`. If Cloudflare still selects an older version, check that it is building the commit and root directory containing this `package.json`. See [Cloudflare's package-manager version selection](https://developers.cloudflare.com/workers/ci-cd/builds/build-image/#pnpm-version-selection).
 
 Content analysis uses the Cloudflare Workers AI binding configured in `wrangler.jsonc`. A Cloudflare account with Workers AI enabled is required when running an analysis, and model calls may incur usage charges even during local development. Before each request, the app asks for confirmation to send the selected brand profile, page title/description, and any caption/transcript/context to Cloudflare Workers AI. Public pages may block metadata access; in that case, paste the caption or transcript. The feature does not retrieve video analytics or watch the full video, so it labels performance drivers as hypotheses rather than proven causes of virality.
 
