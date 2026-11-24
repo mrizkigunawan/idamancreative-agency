@@ -1,13 +1,13 @@
 # Project change backlog
 
-Status: planning only. No application changes are authorized yet. Review and execute these tasks one at a time when requested.
+Status: tasks 1 and 2 are authorized for implementation. Tasks 3–5 remain pending; visual/theme work stays deferred.
 
 ## 1. Remove Asisten Konten
 
-- [ ] Remove the **Asisten Konten** navigation entry.
-- [ ] Delete its page/routes and components used exclusively by this feature.
-- [ ] Remove related imports, links, and feature-specific code; preserve shared components needed elsewhere.
-- [ ] Verify the menu is gone and remaining navigation works.
+- [x] Remove the **Asisten Konten** navigation entry.
+- [x] Delete its page/routes and components used exclusively by this feature.
+- [x] Remove related imports, links, and feature-specific code; preserve shared components needed elsewhere.
+- [x] Verify the menu is gone and remaining navigation is wired correctly (source review, TypeScript check, and production build passed; browser verification pending).
 
 ## 2. Remove mode rekam
 

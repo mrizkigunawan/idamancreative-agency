@@ -4,11 +4,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { addMonths, format, getDaysInMonth, getDay, parseISO, startOfMonth, subMonths } from 'date-fns'
 import { id } from 'date-fns/locale'
-import { ArrowDownLeft, ArrowRight, ArrowUpRight, Banknote, BriefcaseBusiness, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Eye, EyeOff, FileDown, FilePlus2, FileText, Handshake, KeyRound, LayoutDashboard, Link2, LogOut, Menu, MessageCircle, Package, PanelsTopLeft, Pencil, Plus, Power, RotateCcw, Search, Send, Sparkles, Trash2, TrendingUp, Upload, Wallet, X } from 'lucide-react'
+import { ArrowDownLeft, ArrowRight, ArrowUpRight, Banknote, BriefcaseBusiness, CalendarDays, Check, ChevronLeft, ChevronRight, ClipboardList, Eye, EyeOff, FileDown, FilePlus2, FileText, Handshake, KeyRound, LayoutDashboard, Link2, LogOut, Menu, MessageCircle, Package, PanelsTopLeft, Pencil, Plus, Power, Search, Sparkles, Trash2, TrendingUp, Upload, Wallet, X } from 'lucide-react'
 import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import type { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, lazy, useEffect, useMemo, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { getImportantDates } from '#/lib/important-dates'
 import { MonthlyReport } from '#/components/monthly-report'
@@ -16,7 +16,7 @@ import { BrandNotesPanel } from '#/components/brand-notes'
 import { InventoryView } from '#/components/inventory-view'
 import { BrandPrivacyContext, useBrandPrivacy } from '#/components/brand-privacy'
 import { ClientDocumentsPanel } from '#/components/client-documents'
-import { analyzeInstagramCover, askContentAssistant, createAssistantContentPlan, getAuthState, getPageData, moveProspectDocuments, removeRecord, saveBrandSocialProfile, saveInstagramFeedOrder, saveRecord, seedDemoData, setBrandActiveStatus } from '#/lib/server'
+import { analyzeInstagramCover, getAuthState, getPageData, moveProspectDocuments, removeRecord, saveBrandSocialProfile, saveInstagramFeedOrder, saveRecord, seedDemoData, setBrandActiveStatus } from '#/lib/server'
 import { ContentPlanShareButton, InstagramFeedPlanner, InstagramProfilePlanner, ProfileImageUpload } from '#/components/content-planner'
 import type { brandNotes, brandSocialProfiles, brands, contents, visits, prospects, transactions, socialReports, inventoryItems } from '#/lib/schema'
 import { defaultWorkspaceProfile } from '#/lib/workspace-profile'
@@ -53,7 +53,7 @@ const contentStatusDescriptions: Record<(typeof contentStatuses)[number], string
 const navItems = [
   { id: 'dashboard', label: 'Beranda', icon: LayoutDashboard }, { id: 'calendar', label: 'Kalender & Visit', icon: CalendarDays }, { id: 'brands', label: 'Brand & SOW', icon: BriefcaseBusiness },
   { id: 'planner', label: 'Content Planner', icon: PanelsTopLeft }, { id: 'pipeline', label: 'Pitching CRM', icon: Handshake },
-  { id: 'finance', label: 'Keuangan', icon: Wallet }, { id: 'inventory', label: 'Inventaris', icon: Package }, { id: 'analysis', label: 'Asisten Konten', icon: Sparkles },
+  { id: 'finance', label: 'Keuangan', icon: Wallet }, { id: 'inventory', label: 'Inventaris', icon: Package },
 ]
 type AppLanguage = 'id' | 'en'
 const useAppLanguage = (): AppLanguage => 'id'
@@ -172,7 +172,7 @@ function Workspace() {
     setModal({ kind, item: defaults, ...(performanceOnly ? { performanceOnly: true } : {}) })
   }
   const heading = navItems.find((item) => item.id === view)?.label ?? 'Beranda'
-  const navEnglish: Record<string, string> = { Beranda: 'Dashboard', 'Kalender & Visit': 'Calendar & Visits', 'Brand & SOW': 'Brands & SOW', 'Content Planner': 'Content Planner', 'Pitching CRM': 'Prospect Pipeline', Keuangan: 'Finance', Inventaris: 'Inventory', 'Asisten Konten': 'Content Assistant' }
+  const navEnglish: Record<string, string> = { Beranda: 'Dashboard', 'Kalender & Visit': 'Calendar & Visits', 'Brand & SOW': 'Brands & SOW', 'Content Planner': 'Content Planner', 'Pitching CRM': 'Prospect Pipeline', Keuangan: 'Finance', Inventaris: 'Inventory' }
   const currentMonthLabel = monthText(month, language)
   const activeBrands = data.brands.filter((brand) => brand.isActive)
   const maskPrivateText = (value: string) => {
@@ -260,7 +260,6 @@ function Workspace() {
         {view === 'calendar' && <CalendarView month={month} moveMonth={moveMonth} onToday={() => setMonth(monthNow())} contents={data.contents} visits={monthVisits} brands={data.brands} onMoveContent={moveContentDate} onAddContent={(date) => addRecord('content', date ? { date } : undefined)} onAddVisit={(date) => addRecord('visit', date ? { date } : undefined)} onEditContent={(item) => addRecord('content', item as unknown as Record<string, unknown>)} onEditVisit={(item) => addRecord('visit', item as unknown as Record<string, unknown>)} />}
         {view === 'planner' && <ContentPlannerMenu brands={data.brands} contents={data.contents} profiles={data.socialProfiles} onEditContent={(item) => addRecord('content', item as unknown as Record<string, unknown>)} onAddContent={(date, brandId) => addRecord('content', { ...(date ? { date } : {}), ...(brandId ? { brandId } : {}) })} onSaveContent={savePlannerContent} onSaveOrder={saveFeedOrder} onAnalyzeCover={async (contentId) => (await analyzeInstagramCover({ data: { contentId } })).review} onSaveProfile={saveSocialProfile} />}
 
-        {view === 'analysis' && (recordingMode ? <section className="card privacy-placeholder"><EyeOff size={20} /><strong>Asisten Konten dijeda sementara</strong><p>Mode Rekam menyembunyikan data klien dan percakapan agar informasi pribadi tidak ikut terekam.</p></section> : <ContentAssistantView brands={activeBrands} onAddToPlan={(values) => save('content', undefined, values)} />)}
 
         {view === 'brands' && (currentBrand ? <BrandDetail brand={currentBrand} tab={brandTab} setTab={setBrandTab} month={month} moveMonth={moveMonth} data={data} onBack={() => setSelectedBrand(null)} onToggleActive={() => toggleBrandActive(currentBrand)} onEdit={() => addRecord('brand', currentBrand as unknown as Record<string, unknown>)} onSaveBrand={(values) => save('brand', currentBrand.id, values)} onAddContent={(date) => addRecord('content', { brandId: currentBrand.id, ...(date ? { date } : {}) })} onEditContent={(item) => addRecord('content', item as unknown as Record<string, unknown>)} onEditPerformance={(item) => addRecord('content', item as unknown as Record<string, unknown>, true)} onDeleteContent={(item) => remove('content', item.id, item.title)} onAddNote={() => addRecord('brandNote', { brandId: currentBrand.id })} onEditNote={(item) => addRecord('brandNote', item as unknown as Record<string, unknown>)} onDeleteNote={(item) => remove('brandNote', item.id, item.title)} onToggleNoteDone={toggleBrandNoteDone} onDeleteReport={async (id) => { await remove('socialReport', id, `laporan ${brandNameForDelete(currentBrand, month)}`) }} onReload={reload} onSaveContent={savePlannerContent} onSaveFeedOrder={saveFeedOrder} onAnalyzeCover={async (contentId) => (await analyzeInstagramCover({ data: { contentId } })).review} onSaveProfile={saveSocialProfile} /> : <BrandList brands={data.brands} data={data} month={month} search={search} setSearch={setSearch} onOpen={(brand) => { setSelectedBrand(brand.id); setBrandTab('overview') }} onAdd={() => addRecord('brand')} onEdit={(brand) => addRecord('brand', brand as unknown as Record<string, unknown>)} onDelete={(brand) => remove('brand', brand.id, brand.name)} onToggleActive={toggleBrandActive} />)}
 
@@ -489,66 +488,6 @@ function ContactInfo({ phone }: { phone: string }) { const language = useAppLang
 function Info({ label, value, wide = false }: { label: string; value?: string; wide?: boolean }) { const language = useAppLanguage(); return <div className={wide ? 'wide' : ''}><div className="eyebrow" style={{ color: '#938b7f', fontSize: 9 }}>{uiText(language, label)}</div><div style={{ fontSize: 12, marginTop: 5, lineHeight: 1.5 }}>{value || '—'}</div></div> }
 function brandNameForDelete(brand: Brand, month: string) { return `${brand.name} · ${idMonth(month)}` }
 function MonthControl({ month, moveMonth }: { month: string; moveMonth: (delta: number) => void }) { const language = useAppLanguage(); return <div className="month-switch"><button aria-label={language === 'en' ? 'Previous month' : 'Bulan sebelumnya'} onClick={() => moveMonth(-1)}><ChevronLeft size={16} /></button><span className="badge" style={{ minWidth: 105, justifyContent: 'center' }}>{monthText(month, language, true)}</span><button aria-label={language === 'en' ? 'Next month' : 'Bulan berikutnya'} onClick={() => moveMonth(1)}><ChevronRight size={16} /></button></div> }
-
-type AssistantMessage = { role: 'user' | 'assistant'; content: string }
-function ContentAssistantView({ brands, onAddToPlan }: { brands: Brand[]; onAddToPlan: (values: Record<string, unknown>) => Promise<void> }) {
-  const [brandId, setBrandId] = useState('')
-  const [platform, setPlatform] = useState('Instagram')
-  const [messages, setMessages] = useState<AssistantMessage[]>([])
-  const [input, setInput] = useState('')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-  const [planError, setPlanError] = useState('')
-  const [planBusy, setPlanBusy] = useState(false)
-  const [planSaved, setPlanSaved] = useState(false)
-  const bottomRef = useRef<HTMLDivElement>(null)
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' }) }, [messages, busy])
-  const sendMessage = async (raw = input) => {
-    const content = raw.trim()
-    if (!content || busy) return
-    const retrying = messages.at(-1)?.role === 'user' && messages.at(-1)?.content === content
-    const base = retrying ? messages.slice(0, -1) : messages
-    let next: AssistantMessage[] = [...base, { role: 'user' as const, content }].slice(-12)
-    if (next[0]?.role === 'assistant') next = next.slice(1)
-    setMessages(next); setBusy(true); setError(''); setPlanSaved(false); setPlanError('')
-    try {
-      const result = await askContentAssistant({ data: { brandId: brandId || undefined, targetPlatform: platform, messages: next } })
-      setMessages([...next, { role: 'assistant' as const, content: result.answer }].slice(-12))
-      setInput('')
-    } catch (cause) { setError(cause instanceof Error ? cause.message : 'Asisten gagal menjawab. Coba lagi.') }
-    finally { setBusy(false) }
-  }
-  const addLatestPlan = async () => {
-    if (!brandId || messages.at(-1)?.role !== 'assistant' || planBusy) return
-    setPlanBusy(true); setPlanError(''); setPlanSaved(false)
-    try {
-      const { plan } = await createAssistantContentPlan({ data: { brandId, targetPlatform: platform as 'Instagram' | 'TikTok' | 'YouTube' | 'Facebook' | 'Lainnya', messages: messages.slice(-8) } })
-      await onAddToPlan({ brandId, title: plan.title, format: plan.format, date: today(), status: 'Ideation', platforms: [platform], inspo: '', hook: plan.hook, brief: plan.brief, caption: [plan.caption, plan.cta].filter(Boolean).join('\n\n'), views: 0, likes: 0, comments: 0, shares: 0, saves: 0 })
-      setPlanSaved(true)
-    } catch (cause) { setPlanError(cause instanceof Error ? cause.message : 'Draft Content Plan gagal ditambahkan.') }
-    finally { setPlanBusy(false) }
-  }
-  const starters = [
-    'Buatkan 5 ide Reels yang menarik untuk brand dan platform yang kupilih.',
-    'Bantu analisa hook, alur, dan CTA dari caption atau transkrip ini: ',
-    'Tolong perbaiki caption ini agar lebih natural dan punya CTA yang jelas: ',
-    'Susun kalender konten satu minggu dengan variasi format dan tujuan.',
-  ]
-  return <>
-    <div className="pagehead"><div><div className="eyebrow">Teman kerja social media</div><h1>Asisten Konten</h1><p>Tanya soal ide, strategi, caption, brief, evaluasi konten, atau pekerjaan social media sehari-hari.</p></div><button className="button" disabled={!messages.length || busy} onClick={() => { setMessages([]); setInput(''); setError('') }}><RotateCcw size={14} /> Percakapan baru</button></div>
-    <section className="card assistant-card">
-      <div className="assistant-toolbar"><div className="assistant-toolbar-copy"><span className="assistant-status-dot" /><div><strong>Asisten siap membantu</strong><small>Jawaban singkat, praktis, dan disesuaikan dengan pilihanmu.</small></div></div><div className="assistant-context"><label className="field"><span>Brand <small>(opsional)</small></span><select className="select" value={brandId} onChange={(event) => setBrandId(event.target.value)}><option value="">Pertanyaan umum</option>{brands.map((brand) => <option key={brand.id} value={brand.id}>{brand.name}</option>)}</select></label><label className="field"><span>Platform</span><select className="select" value={platform} onChange={(event) => setPlatform(event.target.value)}>{['Instagram', 'TikTok', 'YouTube', 'Facebook', 'Lainnya'].map((item) => <option key={item}>{item}</option>)}</select></label></div></div>
-      <div className="assistant-messages" aria-live="polite">
-        {!messages.length && <div className="assistant-welcome"><span className="assistant-welcome-icon"><Sparkles size={20} /></span><h2>Mulai dari pertanyaan sederhana</h2><p>Pilih contoh atau tulis sendiri. Untuk menganalisis konten tertentu, tempel caption, transkrip, atau ringkasan isi kontennya; link saja mungkin tidak bisa dibaca.</p><div className="assistant-starters">{starters.map((starter) => <button key={starter} className="assistant-starter" onClick={() => setInput(starter)}>{starter}</button>)}</div></div>}
-        {messages.map((message, index) => <article className={`assistant-message ${message.role}`} key={`${index}-${message.role}`}><span className="assistant-message-avatar">{message.role === 'assistant' ? <Sparkles size={14} /> : 'K'}</span><div className="assistant-message-bubble"><small>{message.role === 'assistant' ? 'Asisten Konten' : 'Kamu'}</small><p>{message.content}</p></div></article>)}
-        {busy && <article className="assistant-message assistant"><span className="assistant-message-avatar"><Sparkles size={14} /></span><div className="assistant-message-bubble"><small>Asisten Konten</small><p className="assistant-typing">Sedang menyusun jawaban…</p></div></article>}
-        {messages.at(-1)?.role === 'assistant' && <div className="assistant-plan-action">{planError && <p className="error" role="alert">{planError}</p>}{planSaved ? <span className="badge green"><Check size={12} /> Draft ditambahkan ke Content Plan</span> : <button className="button primary" disabled={!brandId || planBusy} title={!brandId ? 'Pilih brand di bagian atas terlebih dahulu' : undefined} onClick={() => void addLatestPlan()}><Plus size={14} /> {planBusy ? 'Membuat draft…' : 'Jadikan draft Content Plan'}</button>}{!brandId && <small>Pilih brand di atas untuk memakai tombol ini.</small>}</div>}
-        <div ref={bottomRef} />
-      </div>
-      <form className="assistant-composer" onSubmit={(event) => { event.preventDefault(); void sendMessage() }}><textarea className="textarea" rows={3} maxLength={4000} value={input} onChange={(event) => setInput(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void sendMessage() } }} placeholder="Tulis pertanyaanmu… (Enter untuk kirim, Shift + Enter untuk baris baru)" aria-label="Pesan untuk Asisten Konten" />{error && <p className="error assistant-error" role="alert">{error}</p>}<div className="assistant-composer-footer"><span>Pesan diproses oleh Cloudflare Workers AI. Jika memilih brand, catatan profilnya ikut dikirim. Periksa ulang fakta dan angka.</span><button className="button primary" type="submit" disabled={!input.trim() || busy}>{busy ? 'Menjawab…' : 'Kirim'} <Send size={14} /></button></div></form>
-    </section>
-  </>
-}
 
 function ContentPlannerMenu({ brands, contents, profiles, onEditContent, onAddContent, onSaveContent, onSaveOrder, onAnalyzeCover, onSaveProfile }: { brands: Brand[]; contents: Content[]; profiles: SocialProfile[]; onEditContent: (item: Content) => void; onAddContent: (date?: string, brandId?: string) => void; onSaveContent: (item: Content, patch: Partial<Content>, coverFile?: File) => Promise<void>; onSaveOrder: (brandId: string, contentIds: string[], dateAssignments: { contentId: string; date: string }[]) => Promise<void>; onAnalyzeCover: (contentId: string) => Promise<string>; onSaveProfile: (values: { brandId: string; profilePictureUrl: string; username: string; displayName: string; bio: string; highlights: { id: string; title: string; coverUrl: string; sortOrder: number }[]; pinnedContentIds: string[] }) => Promise<void> }) {
   const language = useAppLanguage()

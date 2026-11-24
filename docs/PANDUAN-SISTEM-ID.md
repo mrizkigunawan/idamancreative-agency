@@ -57,7 +57,6 @@ Kalimat ini menjelaskan cakupan aplikasi tanpa menjanjikan hasil bisnis tertentu
 | Pitching CRM | Kontak prospek, estimasi nilai layanan, tahap penawaran, tanggal tindak lanjut, dokumen, dan perubahan prospek menjadi brand. | Mencatat peluang klien baru dan langkah berikutnya. |
 | Keuangan | Pemasukan, pengeluaran, piutang, tagihan belum dibayar, invoice PDF, laporan PDF, dan pintasan WhatsApp. | Melihat uang yang sudah diterima serta pembayaran yang masih ditunggu. |
 | Inventaris | Catatan peralatan, jumlah, harga beli, nomor seri, kondisi, lokasi, status, dan nota. | Menyimpan riwayat dan keadaan perlengkapan kerja. |
-| Asisten Konten | Percakapan AI untuk ide, strategi, caption, brief, dan evaluasi; hasilnya dapat dijadikan draf content plan. | Membantu menyusun bahan awal pekerjaan konten. |
 
 ### Fitur dalam ruang kerja setiap brand
 
@@ -186,21 +185,7 @@ Status membantu menjelaskan tahap pengerjaan:
 
 Pengguna memperbarui status sendiri. Perubahan status bukan bukti bahwa aplikasi telah mengunggah konten.
 
-### Langkah 8 — Gunakan AI jika membutuhkan bantuan ide
-
-1. Buka **Asisten Konten**.
-2. Pilih brand dan platform tujuan. Brand boleh dikosongkan untuk pertanyaan umum.
-3. Tulis kebutuhan yang spesifik, misalnya “Buat ide Reels tentang menu sarapan Kedai Pagi untuk pekerja sekitar.”
-4. Untuk membahas referensi, tempel caption, transkrip, atau ringkasan materinya.
-5. Pilih **Kirim**, lalu tinjau jawaban AI.
-6. Setelah memilih brand, tekan **Jadikan draft Content Plan** jika ingin menyimpan konsep dari percakapan.
-7. Buka kembali draf di Content Hub dan sesuaikan tanggal serta detailnya.
-
-Draf dibuat dengan status Ideation dan tanggal hari saat draf disimpan. Tombol tersebut membuat satu konsep konten; permintaan kalender mingguan dalam percakapan tidak otomatis menjadi banyak entri kalender.
-
-Pesan dan catatan profil brand yang dipilih dikirim ke Cloudflare Workers AI. Fitur membutuhkan layanan AI yang aktif. Periksa fakta dan angka sebelum menggunakan hasilnya.
-
-### Langkah 9 — Susun tampilan Instagram
+### Langkah 8 — Susun tampilan Instagram
 
 1. Buka **Content Planner** → **Feed Planner**.
 2. Pilih brand Instagram dan bulan yang ingin ditinjau.
@@ -215,7 +200,7 @@ Menyimpan susunan feed dapat menukar tanggal konten mengikuti urutan baru. Perik
 
 Jika ingin meminta masukan AI tentang cover, unggah dan simpan gambar cover terlebih dahulu. Penilaian visual membutuhkan layanan AI vision yang aktif.
 
-### Langkah 10 — Minta tinjauan klien
+### Langkah 9 — Minta tinjauan klien
 
 1. Buka daftar konten brand atau Feed Planner pada bulan yang dipilih.
 2. Pilih **Bagikan semua konten**.
@@ -227,7 +212,7 @@ Jika ingin meminta masukan AI tentang cover, unggah dan simpan gambar cover terl
 
 Tautan berlaku 30 hari dan dapat dinonaktifkan. Siapa pun yang memiliki tautan dapat membukanya selama masih berlaku. Komentar klien tidak otomatis mengubah status konten menjadi disetujui.
 
-### Langkah 11 — Atur posting dan kunjungan produksi
+### Langkah 10 — Atur posting dan kunjungan produksi
 
 1. Buka **Kalender & Visit** dan pilih bulan.
 2. Gunakan tab **Posting** untuk melihat jadwal konten.
@@ -239,7 +224,7 @@ Tautan berlaku 30 hari dan dapat dinonaktifkan. Siapa pun yang memiliki tautan d
 
 Kalender juga menyediakan catatan hari penting Indonesia dan Bali beserta ide Story. Periksa kembali tanggal yang akan disebut dalam materi publikasi.
 
-### Langkah 12 — Catat publikasi dan hasil konten
+### Langkah 11 — Catat publikasi dan hasil konten
 
 1. Publikasikan konten melalui platform media sosial atau alat publikasi yang digunakan agensi.
 2. Buka Content Hub dan ubah status konten menjadi **Uploaded** setelah benar-benar tayang.
@@ -249,7 +234,7 @@ Kalender juga menyediakan catatan hari penting Indonesia dan Bali beserta ide St
 
 Konten Uploaded dihitung sebagai konten tayang. Pada rincian SOW, Carousel dan Single Post masuk kelompok Feed. Angka Visit menghitung jadwal yang tercatat pada bulan tersebut; belum terlihat status penyelesaian kunjungan tersendiri.
 
-### Langkah 13 — Susun laporan bulanan
+### Langkah 12 — Susun laporan bulanan
 
 1. Buka brand → **Analisa & Laporan**, lalu pilih bulan.
 2. Pilih platform yang akan dilaporkan.
@@ -263,9 +248,9 @@ Konten Uploaded dihitung sebagai konten tayang. Pada rincian SOW, Carousel dan S
 
 Jumlah konten tayang mengikuti content plan. Metrik akun tetap perlu diambil dari analitik platform dan dimasukkan pengguna. Biarkan kolom kosong jika datanya belum tersedia; isi 0 hanya jika nilainya memang nol.
 
-Tombol Buat draft analisis pada laporan memakai perhitungan dan aturan di aplikasi. Tombol ini berbeda dari percakapan Asisten Konten yang memakai AI.
+Tombol Buat draft analisis pada laporan memakai perhitungan dan aturan di aplikasi.
 
-### Langkah 14 — Catat tagihan dan pembayaran
+### Langkah 13 — Catat tagihan dan pembayaran
 
 1. Buka **Keuangan** → **Catat transaksi**.
 2. Pilih jenis income untuk pemasukan atau expense untuk pengeluaran.
@@ -279,7 +264,7 @@ Tombol Buat draft analisis pada laporan memakai perhitungan dan aturan di aplika
 
 Ringkasan laba rugi memakai pemasukan dan pengeluaran yang berstatus Lunas. Piutang serta pengeluaran belum dibayar ditampilkan terpisah. Nilai retainer pada profil brand tidak otomatis menjadi transaksi atau invoice bulanan.
 
-### Langkah 15 — Catat peralatan kerja
+### Langkah 14 — Catat peralatan kerja
 
 1. Buka **Inventaris** dan pilih aksi tambah barang.
 2. Isi nama, kategori, merek, model, nomor seri, jumlah, dan harga beli.
@@ -289,7 +274,7 @@ Ringkasan laba rugi memakai pemasukan dan pengeluaran yang berstatus Lunas. Piut
 
 Untuk pembelian baru yang perlu masuk ke keuangan, buat expense berkategori Inventaris. Formulir ini menyimpan detail barang sekaligus ke Inventaris. Total pengeluarannya dihitung dari harga per unit dikalikan jumlah.
 
-### Langkah 16 — Arsipkan klien yang berhenti
+### Langkah 15 — Arsipkan klien yang berhenti
 
 1. Buka **Brand & SOW**, lalu pilih brand.
 2. Pilih **Nonaktifkan** jika layanan berhenti sementara atau selesai.
@@ -307,8 +292,8 @@ Gunakan penjelasan berikut agar materi iklan sesuai kemampuan yang terlihat dala
 | Publikasi media sosial | Aplikasi mencatat rencana dan status. Belum terlihat pengiriman posting otomatis ke Instagram, TikTok, atau platform lain. |
 | Analitik | Pengguna memasukkan angka dari platform. Belum terlihat sinkronisasi otomatis statistik akun. |
 | Persetujuan klien | Klien memberi masukan melalui tautan. Admin mengelola perubahan dan status konten. |
-| AI | Membantu ide, tulisan, draf, dan penilaian cover. Hasilnya perlu diperiksa dan tidak menjamin viral atau penjualan. |
-| Analisis tautan video | Ada fungsi analisis referensi di sisi server, tetapi belum terlihat terhubung ke menu saat ini. Untuk demo Asisten Konten, gunakan caption, transkrip, atau ringkasan. |
+| AI | Membantu menilai cover Instagram. Hasilnya perlu diperiksa dan tidak menjamin viral atau penjualan. |
+| Analisis tautan video | Ada fungsi analisis referensi di sisi server, tetapi belum terlihat terhubung ke menu saat ini. |
 | Dokumen | Aplikasi membuat dan menyimpan dokumen PDF serta statusnya. Belum terlihat layanan tanda tangan elektronik. |
 | Pembayaran | Aplikasi mencatat status pembayaran dan membuat invoice. Belum terlihat pemeriksaan mutasi bank atau pembayaran otomatis. |
 | Akuntansi | Ringkasan berbasis kas dan catatan transaksi. Jangan menjanjikan pembukuan, pajak, atau penyusutan aset lengkap. |
@@ -351,7 +336,7 @@ Ajakan penutup dapat diganti menjadi “Hubungi kami untuk demo” setelah pemil
 5. Lengkapi angka laporan dan coba pratinjau PDF sebelum merekam.
 6. Jika menampilkan AI, coba layanannya lebih dahulu. Rekam jawaban yang sudah ditinjau faktanya.
 7. Gunakan Mode Rekam untuk cuplikan tampilan umum jika diperlukan.
-8. Untuk menunjukkan pengisian formulir dan Asisten Konten, gunakan data demo. Mode Rekam membatasi sejumlah tindakan dan menjeda Asisten Konten.
+8. Untuk menunjukkan pengisian formulir, gunakan data demo. Mode Rekam membatasi sejumlah tindakan.
 9. Periksa hasil rekaman sebelum dibagikan. Nominal, gambar, atau rincian lain dapat tetap terlihat meskipun Mode Rekam aktif.
 
 Mode Rekam adalah pengaturan penyamaran tampilan. Tombol ini tidak merekam video. Gunakan alat perekam layar atau ambil gambar tiap tahap, lalu susun menjadi stop motion.
