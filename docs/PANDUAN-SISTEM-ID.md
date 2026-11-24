@@ -111,6 +111,8 @@ Jika aplikasi belum memiliki admin, pengelola perlu menyelesaikan setup pertama.
 
 Halaman tetap terbuka setelah perubahan disimpan. Gunakan **Kembali ke workspace** untuk kembali bekerja. Penggantian kata sandi tersedia di bagian **Keamanan akun** pada halaman profil.
 
+Bagian **Tampilan workspace** menyediakan aksen Biru, Teal, Violet, dan Grafit serta mode Terang, Gelap, atau Ikuti sistem. Pratinjau berubah langsung; simpan semua perubahan agar pilihan diterapkan pada workspace. Jika meninggalkan halaman tanpa menyimpan, tampilan kembali ke pengaturan tersimpan. Laporan cetak tetap menggunakan latar terang.
+
 Nama brand ruang kerja adalah identitas agensi dan digunakan pada halaman masuk, judul halaman, dokumen, laporan, serta tautan tinjauan. Nama penanggung jawab menjadi penanda tangan dokumen; jika kosong, nama workspace digunakan. Teks template mengikuti nama terbaru, sedangkan teks kustom tetap dipertahankan. Data klien dibuat melalui menu Brand & SOW.
 
 ### Langkah 3 — Catat calon klien

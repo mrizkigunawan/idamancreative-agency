@@ -21,6 +21,14 @@ Migrations `0030` and `0031` update generic defaults and convert exact, unedited
 
 Run `pnpm test:branding` with Node 24 and Python 3 to check profile isolation, templates, PDF identity, and migration data preservation. The installation supports one admin and one workspace profile per D1 database; this change does not add SaaS tenancy.
 
+## Appearance
+
+Open **Edit profil → Tampilan workspace** to choose blue, teal, violet, or graphite accents and light, dark, or system mode. Choices preview immediately; **Simpan semua perubahan** persists them for the workspace. Leaving the profile page without saving restores the saved appearance. System mode follows each viewer's device preference.
+
+Migration `0032` adds the appearance settings, defaulting to blue and light mode. Login and public review pages use the saved theme too. Client colors and semantic status colors stay distinct, and printed reports use light surfaces.
+
+Shared type scales, controls, spacing, and visual foundations live in `src/styles/system.css`. Existing component layouts are in the lower `components` layer of `src/styles.css`; paper-specific styles are isolated in `src/styles/print.css`. Preset palettes and theme validation live in `src/lib/workspace-theme.ts`. The branding test command also checks theme contrast, safe defaults, and token coverage.
+
 ## Local development
 
 Requirements: Node.js 20 or newer and pnpm 10 or newer.

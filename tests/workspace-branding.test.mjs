@@ -26,7 +26,7 @@ afterEach(() => { globalThis.fetch = originalFetch })
 test('generic defaults and public identity never expose private profile fields', () => {
   const profile = normalizeWorkspaceProfile({ name: '  Studio One  ', ownerName: 'Private owner', email: 'private@example.test', phone: '123', address: 'Private address', updatedAt: 7 })
   assert.equal(profile.name, 'Studio One')
-  assert.deepEqual(publicWorkspaceIdentity(profile), { name: 'Studio One', tagline: 'Agency operating system', updatedAt: 7 })
+  assert.deepEqual(publicWorkspaceIdentity(profile), { name: 'Studio One', tagline: 'Agency operating system', updatedAt: 7, themeAccent: 'blue', themeMode: 'light' })
   assert.equal(normalizeWorkspaceProfile({ name: ' ' }).name, 'Agency Workspace')
   assert.equal(normalizeWorkspaceProfile().ownerName, '')
   assert.equal(workspaceDocumentPrefix('Studio One'), 'SO')

@@ -49,7 +49,8 @@ class BrandingMigrationTests(unittest.TestCase):
         self.assertEqual(tx, original_transaction)
         self.assertEqual((tx['payment_account_name'], tx['payment_bank_name'], tx['payment_account_number'], tx['brand_id'], tx['inventory_item_id']), ('Saved recipient', 'Saved bank', '1234', 'brand', 'inventory'))
         for table in ['brands', 'inventory_items', 'workspace_profile']:
-            self.assertEqual(db.execute(f'SELECT * FROM {table}').fetchall(), before[table])
+            columns = ','.join('\"' + row[1] + '\"' for row in db.execute(f'PRAGMA table_info({table})') if row[1] not in ('theme_accent', 'theme_mode'))
+            self.assertEqual(db.execute(f'SELECT {columns} FROM {table}').fetchall(), before[table])
         body, status, number = db.execute('SELECT sections,status,document_number FROM client_documents').fetchone()
         updated = json.loads(body)
         self.assertEqual(updated[0]['body'], intro('{{workspaceName}}'))
@@ -59,7 +60,7 @@ class BrandingMigrationTests(unittest.TestCase):
         insert('transactions', id='new-transaction')
         self.assertEqual(db.execute("SELECT payment_account_name,payment_bank_name,payment_account_number FROM transactions WHERE id='new-transaction'").fetchone(), ('', '', ''))
         insert('workspace_profile', id='new-workspace')
-        self.assertEqual(db.execute("SELECT name FROM workspace_profile WHERE id='new-workspace'").fetchone()[0], 'Agency Workspace')
+        self.assertEqual(db.execute("SELECT name,theme_accent,theme_mode FROM workspace_profile WHERE id='new-workspace'").fetchone(), ('Agency Workspace', 'blue', 'light'))
         self.assertEqual(len(db.execute("SELECT name FROM sqlite_master WHERE type='index' AND name LIKE 'transactions_%'").fetchall()), 3)
 
 

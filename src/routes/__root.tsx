@@ -1,6 +1,8 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 
 import appCss from '../styles.css?url'
+import systemCss from '../styles/system.css?url'
+import printCss from '../styles/print.css?url'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -21,6 +23,8 @@ export const Route = createRootRoute({
         rel: 'stylesheet',
         href: appCss,
       },
+      { rel: 'stylesheet', href: systemCss },
+      { rel: 'stylesheet', href: printCss },
     ],
   }),
   shellComponent: RootDocument,

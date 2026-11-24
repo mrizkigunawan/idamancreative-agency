@@ -7,8 +7,10 @@ import { workspaceProfile } from '#/lib/schema'
 import { getWorkspaceProfile } from '#/lib/workspace-profile.server'
 import { defaultWorkspaceProfile, normalizeWorkspaceProfile } from '#/lib/workspace-profile'
 
+import { themeAccents, themeModes } from '#/lib/workspace-theme'
+
 const defaults = { ...defaultWorkspaceProfile, id: 'workspace', updatedAt: 0 }
-const profileInput = z.object({ name: z.string().trim().min(1).max(120), tagline: z.string().trim().max(160).optional(), ownerName: z.string().trim().max(120).optional(), email: z.string().trim().max(160).refine((value) => !value || z.email().safeParse(value).success, 'Alamat email usaha tidak valid.').optional(), phone: z.string().trim().max(40).optional(), address: z.string().trim().max(300).optional(), website: z.string().trim().max(200).refine((value) => !value || /^https:\/\//i.test(value), 'Gunakan alamat website HTTPS.').optional() })
+const profileInput = z.object({ name: z.string().trim().min(1).max(120), themeAccent: z.enum(themeAccents).optional(), themeMode: z.enum(themeModes).optional(), tagline: z.string().trim().max(160).optional(), ownerName: z.string().trim().max(120).optional(), email: z.string().trim().max(160).refine((value) => !value || z.email().safeParse(value).success, 'Alamat email usaha tidak valid.').optional(), phone: z.string().trim().max(40).optional(), address: z.string().trim().max(300).optional(), website: z.string().trim().max(200).refine((value) => !value || /^https:\/\//i.test(value), 'Gunakan alamat website HTTPS.').optional() })
 const json = (data: unknown, status = 200) => Response.json(data, { status, headers: { 'Cache-Control': 'private, no-store' } })
 
 export const Route = createFileRoute('/api/workspace-profile')({

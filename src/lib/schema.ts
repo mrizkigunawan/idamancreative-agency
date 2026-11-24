@@ -1,3 +1,4 @@
+import type { ThemeAccent, ThemeMode } from './workspace-theme'
 import { blob, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 export const brands = sqliteTable('brands', {
@@ -58,7 +59,7 @@ export const workspaceBranding = sqliteTable('workspace_branding', {
 export const workspaceProfile = sqliteTable('workspace_profile', {
   id: text('id').primaryKey(), name: text('name').notNull().default('Agency Workspace'), tagline: text('tagline').notNull().default('Agency operating system'),
   ownerName: text('owner_name').notNull().default(''), email: text('email').notNull().default(''), phone: text('phone').notNull().default(''),
-  address: text('address').notNull().default(''), website: text('website').notNull().default(''), updatedAt: integer('updated_at').notNull(),
+  address: text('address').notNull().default(''), website: text('website').notNull().default(''), themeAccent: text('theme_accent').$type<ThemeAccent>().notNull().default('blue'), themeMode: text('theme_mode').$type<ThemeMode>().notNull().default('light'), updatedAt: integer('updated_at').notNull(),
 })
 export const brandSocialProfiles = sqliteTable('brand_social_profiles', {
   brandId: text('brand_id').primaryKey().references(() => brands.id, { onDelete: 'cascade' }),

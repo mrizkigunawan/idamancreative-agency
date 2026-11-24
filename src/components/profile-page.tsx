@@ -4,6 +4,8 @@ import { ArrowLeft, KeyRound } from 'lucide-react'
 import { ProfileImageUpload } from './content-planner'
 import { defaultWorkspaceLogo, normalizeWorkspaceProfile } from '#/lib/workspace-profile'
 import type { WorkspaceProfileDetails } from '#/lib/workspace-profile'
+import type { WorkspaceAppearance } from '#/lib/workspace-theme'
+import { AppearanceSettings } from './appearance-settings'
 
 type ProfilePageProps = {
   user: { name: string; email: string; image?: string | null }
@@ -13,9 +15,10 @@ type ProfilePageProps = {
   onSaved: (name: string, image: string | null) => void
   onBack: () => void
   onChangePassword: () => void
+  onThemePreview?: (appearance: WorkspaceAppearance) => void
 }
 
-export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceProfileSaved, onSaved, onBack, onChangePassword }: ProfilePageProps) {
+export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceProfileSaved, onSaved, onBack, onChangePassword, onThemePreview }: ProfilePageProps) {
   const [name, setName] = useState(user.name)
   const [image, setImage] = useState(user.image || '')
   const [businessProfile, setBusinessProfile] = useState(workspaceProfile)
@@ -29,6 +32,10 @@ export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceP
   const [logoBusy, setLogoBusy] = useState(false)
   const [error, setError] = useState('')
   const titleRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    if (!loading) onThemePreview?.({ themeAccent: businessProfile.themeAccent, themeMode: businessProfile.themeMode })
+  }, [businessProfile.themeAccent, businessProfile.themeMode, loading, onThemePreview])
 
   useEffect(() => {
     titleRef.current?.focus()
@@ -67,7 +74,7 @@ export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceP
     setError('')
     try {
       await onUpdateUser(name.trim(), image.trim() || null)
-      const profileResponse = await fetch('/api/workspace-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: businessProfile.name.trim(), ownerName: businessProfile.ownerName.trim() }) })
+      const profileResponse = await fetch('/api/workspace-profile', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: businessProfile.name.trim(), ownerName: businessProfile.ownerName.trim(), themeAccent: businessProfile.themeAccent, themeMode: businessProfile.themeMode }) })
       const profileResult = await profileResponse.json() as WorkspaceProfileDetails & { error?: string }
       if (!profileResponse.ok) throw new Error(profileResult.error || 'Nama brand gagal disimpan.')
       if (workspaceLogoReset) {
@@ -116,6 +123,7 @@ export function ProfilePage({ user, workspaceProfile, onUpdateUser, onWorkspaceP
           <button type="button" className="button" onClick={() => { setWorkspaceLogoReset(true); setWorkspaceLogoChanged(false); setWorkspaceLogo(defaultWorkspaceLogo) }}>Gunakan logo default</button>
           {workspaceLogoReset && <small className="field-hint">Logo default akan diterapkan saat kamu menyimpan perubahan.</small>}
         </section>
+        <AppearanceSettings value={businessProfile} onChange={(appearance) => setBusinessProfile((current) => ({ ...current, ...appearance }))} />
         <div className="profile-page-save"><button type="button" className="button" onClick={onBack}>Batal</button><button className="button primary" type="submit" disabled={loading || busy || photoBusy || logoBusy}>{busy ? 'Menyimpan…' : photoBusy || logoBusy ? 'Memproses gambar…' : 'Simpan semua perubahan'}</button></div>
       </fieldset>
     </form>

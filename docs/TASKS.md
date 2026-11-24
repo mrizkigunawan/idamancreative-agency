@@ -1,6 +1,6 @@
 # Project change backlog
 
-Status: tasks 1–3 and 5 are implemented. Task 4 (visual/theme work) stays deferred.
+Status: tasks 1–5 are implemented. Task 4 was completed on `codex/workspace-design-system`, branched from `development` at `ca4a099`.
 
 ## 1. Remove Asisten Konten
 
@@ -30,15 +30,19 @@ Validation: TypeScript and production build passed. Source review confirmed dire
 
 Validation: TypeScript and production build passed. Temporary browser previews checked the two dropdown actions, full-page form, successful and failed saves with mock requests, updated profile details, password access from the page, return navigation, desktop/mobile layout, and the existing keyboard and dismissal behavior. The profile page uses `/?page=profile` so it can be refreshed and revisited. The application requires login; authenticated profile saving and session logout were not tested end to end.
 
-## 4. Adjust colors, typography, and theme — deferred
+## 4. Adjust colors, typography, and theme
 
-Wait until the rest of the system has been reviewed before designing or implementing this task.
+Direction: cool neutral surfaces, restrained blue accents, clear contrast, and consistent typography/spacing, guided by the user's dashboard reference.
 
-- [ ] Review and agree on colors and typography.
-- [ ] Keep the existing layout and functionality largely intact.
-- [ ] Make the theme color switchable/changeable.
-- [ ] Decide the available theme choices, where they are changed, and how the preference is saved.
-- [ ] Verify readability and consistency across the application.
+- [x] Apply the reference's color direction and a shared type scale for page headings, section headings, labels, body copy, and helper text.
+- [x] Keep the existing workflows and main layout while fixing responsive spacing and overflow.
+- [x] Make the theme color switchable/changeable.
+- [x] Add blue, teal, violet, and graphite accents with light/dark/system modes in **Edit profil → Tampilan workspace**. Preview immediately, save to D1, and revert unsaved previews when leaving the page.
+- [x] Verify readability and consistency across dashboard, calendar, brands and brand tabs, planner, pipeline, finance, inventory, profile, dialogs, shared reviews, and report printing.
+
+Validation: real signed-in browser checks used an isolated local app and fixture database. Checks covered theme save/reload/cancel, system preference changes, invalid API values, desktop and 390px/320px layouts, accessible labels/contrast, and light report PDFs generated from dark mode. Automated tests cover all palette/mode contrast pairs, safe theme normalization, referenced tokens, client-color contrast, branding behavior, and migration preservation. All 10 Node tests, the SQLite migration test, TypeScript, and the production build passed. The build still reports a large-chunk advisory.
+
+Migration `0032_workspace_appearance.sql` is applied to the local database after a backup under ignored `tmp/theme-backups/`, and to the isolated preview database. No remote migration or deployment has been performed.
 
 ## 5. Use the configured brand name everywhere
 
@@ -60,4 +64,4 @@ Remaining original-name references are infrastructure identifiers, immutable his
 
 ## Future additions
 
-Add new requests here as they are discovered. Task numbers are identifiers, not a fixed execution order; task 4 remains deferred until the review is complete.
+Add new requests here as they are discovered. Task numbers are identifiers, not a fixed execution order.

@@ -9,7 +9,7 @@
     "dev": "vite dev --port 3000",
     "generate-routes": "vite build",
     "build": "vite build",
-    "test:branding": "node --experimental-strip-types --test tests/workspace-branding.test.mjs && python -m unittest discover -s tests -p test_*.py",
+    "test:branding": "node --experimental-strip-types --test tests/workspace-branding.test.mjs tests/workspace-theme.test.mjs && python -m unittest discover -s tests -p test_*.py",
     "preview": "vite preview",
     "deploy": "pnpm run build && wrangler deploy --config wrangler.production.jsonc",
     "cf-typegen": "wrangler types --include-runtime false --include-main-module false",
