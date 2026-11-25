@@ -80,7 +80,9 @@ Activation links expire 30 minutes after generation. Run the same command again 
    pnpm exec wrangler d1 create idaman-creative-ops
    ```
 
-   Copy its ID into `wrangler.jsonc` as `database_id`.
+   Copy its ID into `wrangler.production.jsonc` as `database_id`. Keep the binding name `DB`: it is the code-facing variable, while `database_id` selects the actual database.
+
+   `wrangler.jsonc` is used for local development with emulated D1 storage. `wrangler.production.jsonc` targets the production D1 database. Each has one binding named `DB`, with a different ID. Vite selects the local config for `pnpm dev` and the production config for `pnpm build`. `pnpm deploy` deploys the generated build configuration, preserving the production binding and bundled assets. In Workers Builds, use `pnpm build` followed by `pnpm exec wrangler deploy`.
 
 2. Apply the schema:
 

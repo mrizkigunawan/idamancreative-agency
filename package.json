@@ -14,10 +14,10 @@
     "test:activation": "node --experimental-strip-types --test tests/admin-activation.test.mjs",
     "setup:link": "node scripts/setup-link.mjs",
     "preview": "vite preview",
-    "deploy": "pnpm run build && wrangler deploy --config wrangler.production.jsonc",
+    "deploy": "pnpm run build && wrangler deploy",
     "cf-typegen": "wrangler types --include-runtime false --include-main-module false",
-    "db:local": "wrangler d1 migrations apply idaman-creative-ops --local",
-    "db:remote": "wrangler d1 migrations apply idaman-creative-ops --remote --config wrangler.production.jsonc"
+    "db:local": "wrangler d1 migrations apply DB --local --config wrangler.jsonc",
+    "db:remote": "wrangler d1 migrations apply DB --remote --config wrangler.production.jsonc"
   },
   "dependencies": {
     "@hookform/resolvers": "^7.0.6",
